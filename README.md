@@ -33,3 +33,7 @@ Before you begin, ensure you have met the following requirements:
 
    ```bash
    git clone https://github.com/yourusername/laptop-setup-automation.git
+
+
+## Software
+ - .zsh file
