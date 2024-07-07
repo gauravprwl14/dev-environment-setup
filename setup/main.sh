@@ -5,7 +5,10 @@ cd "$(dirname "$0")"
 
 
 # Install Homebrew
-./install_homebrew.sh
+# ./sdk/homebrew.sh
+# ./sdk/mas.sh
+# ./sdk/node.sh
+# ./sdk/nvm.sh
 
 
 echo " All installations complete. Exiting..."
