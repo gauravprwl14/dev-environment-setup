@@ -55,16 +55,28 @@ install_nvm() {
 # Parameters: None
 # Returns: None
 update_nvm_in_zshrc() {
+    local nvm_prefix=$(brew --prefix nvm)
+    local nvm_sh_path="$nvm_prefix/nvm.sh"
+    local nvm_bash_completion_path="$nvm_prefix/etc/bash_completion.d/nvm"
+    
     # local zshrc_path="${1:-$HOME/.zshrc}"
     update_exported_variable "NVM_DIR" '$HOME/.nvm'
 
     # Add nvm initialization if not present
+#     if ! grep -q '\.nvm/nvm.sh' "$DEFAULT_ZSHRC_PATH"; then
+#         sed -i '' "/$DEFAULT_NVM_SECTION_END/i\\
+# [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\" # This loads nvm  \\
+# [ -s \"\$NVM_DIR/etc/bash_completion.d/nvm\" ] && \. \"\$NVM_DIR/etc/bash_completion.d/nvm\"  # This loads nvm bash_completion
+# " "$DEFAULT_ZSHRC_PATH"
+    
+#     fi
+
+       # Add nvm initialization if not present
     if ! grep -q '\.nvm/nvm.sh' "$DEFAULT_ZSHRC_PATH"; then
         sed -i '' "/$DEFAULT_NVM_SECTION_END/i\\
-[ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\" # This loads nvm  \\
-[ -s \"\$NVM_DIR/etc/bash_completion.d/nvm\" ] && \. \"\$NVM_DIR/etc/bash_completion.d/nvm\"  # This loads nvm bash_completion
+[ -s \"$nvm_sh_path\" ] && \. \"$nvm_sh_path\" # This loads nvm  \\
+[ -s \"$nvm_bash_completion_path\" ] && \. \"$nvm_bash_completion_path\"  # This loads nvm bash_completion
 " "$DEFAULT_ZSHRC_PATH"
-    
     fi
 }
 
