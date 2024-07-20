@@ -24,6 +24,8 @@ install_postgresql() {
     if ! is_postgresql_installed; then
         echo "Installing PostgreSQL..."
         brew install postgresql
+        
+        # brew install postgresql@15 # to install a specific version
         echo "PostgreSQL installation completed."
 
         # Start the PostgreSQL service
@@ -35,6 +37,14 @@ install_postgresql() {
 start_postgresql_service() {
     echo "Starting PostgreSQL service..."
     brew services start postgresql
+    # brew services start postgresql@15 # to start a specific version
+    echo "PostgreSQL service started."
+}
+# Function to stop PostgreSQL service
+stop_postgresql_service() {
+    echo "Starting PostgreSQL service..."
+    brew services stop postgresql
+    # brew services stop postgresql@15 # to start a specific version
     echo "PostgreSQL service started."
 }
 
