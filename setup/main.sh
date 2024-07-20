@@ -10,7 +10,8 @@ cd "$(dirname "$0")"
 # ./sdk/mas.sh
 # ./sdk/nvm.sh
 # ./sdk/node.sh
-./sdk/java.sh
+# ./sdk/java.sh
+./sdk/android_studio.sh
 # ./sdk/xcode.sh
 # ./sdk/docker.sh
 # ./sdk/apps/db/postgres.sh
