@@ -10,7 +10,9 @@ cd "$(dirname "$0")"
 # ./sdk/node.sh
 # ./sdk/nvm.sh
 # ./sdk/watchman.sh
-./sdk/xcode.sh
+# ./sdk/xcode.sh
+./sdk/docker.sh
+# ./sdk/apps/db/postgres.sh
 
 
 echo " All installations complete. Exiting..."
