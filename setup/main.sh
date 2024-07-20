@@ -9,6 +9,8 @@ cd "$(dirname "$0")"
 # ./sdk/mas.sh
 # ./sdk/node.sh
 # ./sdk/nvm.sh
+# ./sdk/watchman.sh
+./sdk/xcode.sh
 
 
 echo " All installations complete. Exiting..."
