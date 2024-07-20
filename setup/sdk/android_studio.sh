@@ -1,4 +1,5 @@
 #!/bin/bash
+source "$(dirname "${BASH_SOURCE[0]}")/../utils/update_zshrc.sh"
 
 # Function to check if a command exists
 command_exists() {
@@ -42,7 +43,14 @@ main_install_android_studio() {
     unmount_dmg
     cleanup
 
-    # add_to_path
+    add_to_path
+    
+    # todo:
+    # 1. install command line tools
+    # 2. install sdk manager
+
+    setupSDK
+    setupAVD
     echo "Android Studio installed successfully."
 }
 
@@ -153,9 +161,38 @@ cleanup() {
 
 # Function to add Android Studio to PATH
 add_to_path() {
-    echo "Adding Android Studio to PATH..."
-    echo 'export PATH="$PATH:/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home/bin:/Applications/Android Studio.app/Contents/jre/Contents/Home/bin:/Applications/Android Studio.app/Contents/MacOS"' >> ~/.zshrc
-    source ~/.zshrc
+    
+    # Define the path to the Android SDK
+    ANDROID_SDK_ROOT="\$HOME/Library/Android/sdk"
+    # echo "Adding Android Studio to PATH..."
+    update_exported_variable "ANDROID_HOME" "$ANDROID_SDK_ROOT"
+    
+    
+
+    # Define the path to the Command-Line Tools
+    CMDLINE_TOOLS="\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin"
+    update_zshrc "CMDLINE_TOOLS" "$CMDLINE_TOOLS"
+    
+    update_zshrc "ANDROID_EMULATOR" "\$ANDROID_SDK_ROOT/emulator"
+    update_zshrc "ANDROID_PLATFORM_TOOLS" "\$ANDROID_SDK_ROOT/platform-tools"
+
+}
+
+# setup required SDK components
+
+setupSDK() {
+    # Install the Android SDK
+    echo "Installing the Android SDK..."
+    sdkmanager "platform-tools" "emulator" "system-images;android-34;google_apis;arm64-v8a" "build-tools;34.0.0"
+}
+
+# Create an AVD for the emulator
+setupAVD() {
+    echo "Creating an AVD..."
+    avdmanager create avd -n avd_device -k "system-images;android-34;google_apis;arm64-v8a" -d pixel_3a
+
+    # start the emulator
+    # emulator -avd avd_device
 }
 
 
