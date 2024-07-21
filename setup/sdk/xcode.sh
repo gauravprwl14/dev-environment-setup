@@ -69,3 +69,15 @@ export -f install_xcode
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     install_xcode
 fi
+
+
+# https://docs.flutter.dev/get-started/install/macos/mobile-ios
+# To configure the command-line tools to use the installed version of Xcode, use the following commands.
+
+# sudo sh -c 'xcode-select -s /Applications/Xcode.app/Contents/Developer && xcodebuild -runFirstLaunch'
+# content_copy
+# Use this path for the latest version of Xcode. If you need to use a different version, specify that path instead.
+
+# Sign the Xcode license agreement.
+
+# sudo xcodebuild -license
