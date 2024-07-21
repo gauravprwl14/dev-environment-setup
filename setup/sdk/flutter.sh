@@ -122,3 +122,4 @@ fi
 # fvm global stable
 # check the fvm directory => ~/fvm vs ~/.fvm vs ~/.fvm/default/bin vs ~/.fvm/default/bin/default/bin
 # check the fvm directory variable names => PUB_CACHE_PATH vs FVM_CACHE_PATH vs FVM_HOME vs Flutter_HOME
+# https://cshanjib.medium.com/setting-up-fvm-flutter-version-management-properly-ab45ade0dd55
