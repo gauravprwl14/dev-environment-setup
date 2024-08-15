@@ -14,11 +14,15 @@ cd "$(dirname "$0")"
 # ./sdk/android_studio.sh
 # ./sdk/xcode.sh
 # ./sdk/docker.sh
-# ./sdk/apps/db/postgres.sh
 # ./sdk/cocoapods.sh
 # ./sdk/fvm.sh
 # ./sdk/dart.sh
-./sdk/flutter.sh
+# ./sdk/flutter.sh
+
+
+# Apps
+# ./sdk/apps/db/postgres.sh
+./sdk/apps/ngrok.sh
 
 
 echo " All installations complete. Exiting..."
