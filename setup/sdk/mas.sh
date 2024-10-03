@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source the Homebrew install script to ensure Homebrew is installed
-source ./install_homebrew.sh
+source "$(dirname "${BASH_SOURCE[0]}")/homebrew.sh"
 
 # Function to install mas (Mac App Store CLI)
 # Parameters: None
