@@ -88,6 +88,6 @@ export -f install_node
 # Call the function if this script is executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     # install_node "$1"
-    # install_node
+    install_node
     install_node_tools
 fi

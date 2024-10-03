@@ -22,7 +22,8 @@ cd "$(dirname "$0")"
 
 # Apps
 # ./sdk/apps/db/postgres.sh
-./sdk/apps/ngrok.sh
+./sdk/apps/db/mysql.sh
+# ./sdk/apps/ngrok.sh
 
 
 echo " All installations complete. Exiting..."
