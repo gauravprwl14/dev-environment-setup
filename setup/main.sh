@@ -18,6 +18,7 @@ cd "$(dirname "$0")"
 # ./sdk/fvm.sh
 # ./sdk/dart.sh
 # ./sdk/flutter.sh
+./sdk/miniconda.sh
 
 
 # Apps
@@ -26,7 +27,7 @@ cd "$(dirname "$0")"
 # ./sdk/apps/redis.sh
 # ./sdk/apps/ngrok.sh
 # ./sdk/apps/telegram.sh
-./sdk/apps/vlc.sh
+# ./sdk/apps/vlc.sh
 
 
 echo " All installations complete. Exiting..."

@@ -46,3 +46,4 @@ Before you begin, ensure you have met the following requirements:
 - Python setup
 - Miniconda installation
 - Conda environment setup
+- Ngrok
