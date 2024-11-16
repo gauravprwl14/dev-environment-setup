@@ -1,5 +1,6 @@
 # dev-environment-setup
-Automated Laptop Setup Scripts Streamline the process of setting up your laptop with all the essential software, command-line tools, and applications using these automated scripts. Say goodbye to manual installations and configuration headaches. With these scripts, you can quickly provision your laptop for development, or any specific use case.
+
+Automated Laptop Setup Scripts streamline the process of setting up your laptop with all the essential software, command-line tools, and applications using these automated scripts. Say goodbye to manual installations and configuration headaches. With these scripts, you can quickly provision your laptop for development, or any specific use case.
 
 # Laptop Setup Automation
 
@@ -24,6 +25,7 @@ Streamline the process of setting up your laptop with the following software and
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
+
 - An operating system supported by the scripts (Windows, macOS, Linux).
 - [Python](https://www.python.org/downloads/) installed on your system.
 
@@ -33,7 +35,14 @@ Before you begin, ensure you have met the following requirements:
 
    ```bash
    git clone https://github.com/yourusername/laptop-setup-automation.git
+   ```
 
+## List of Software
 
-## Software
- - .zsh file
+- .zsh configuration file
+
+## Pending Setup
+
+- Python setup
+- Miniconda installation
+- Conda environment setup

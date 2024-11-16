@@ -25,7 +25,8 @@ cd "$(dirname "$0")"
 # ./sdk/apps/db/mysql.sh
 # ./sdk/apps/redis.sh
 # ./sdk/apps/ngrok.sh
-./sdk/apps/telegram.sh
+# ./sdk/apps/telegram.sh
+./sdk/apps/vlc.sh
 
 
 echo " All installations complete. Exiting..."

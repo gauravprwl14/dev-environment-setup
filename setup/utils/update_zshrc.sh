@@ -5,8 +5,8 @@ DEFAULT_VARIABLE_SECTION_BEGIN="# Begin Variable section"
 DEFAULT_VARIABLE_SECTION_END="# End Variable section"
 DEFAULT_PATH_SECTION_BEGIN="# Begin PATH section"
 DEFAULT_PATH_SECTION_END="# End PATH section"
-# DEFAULT_ZSHRC_PATH="$HOME/.zshrc"
-DEFAULT_ZSHRC_PATH="../.zshrc"
+DEFAULT_ZSHRC_PATH="$HOME/.zshrc"
+# DEFAULT_ZSHRC_PATH="../.zshrc"
 # local zshrc_path="../.zshrc"
 
 # Function to update Variable and Paths in .zshrc file

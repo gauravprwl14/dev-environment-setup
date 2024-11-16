@@ -37,7 +37,24 @@ print_redis_version() {
     redis-server --version
 }
 
+
+# Function to start Redis service
+start_redis_service() {
+    echo "Starting Redis service..."
+    brew services start redis
+    echo "Redis service started."
+}
+
+# Function to stop Redis service
+stop_redis_service() {
+    echo "Stopping Redis service..."
+    brew services stop redis
+    echo "Redis service stopped."
+}
+
+
 # Call the install functions if this script is executed directly
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    install_redis
+    # install_redis
+    start_redis_service
 fi
