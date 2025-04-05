@@ -4,7 +4,7 @@
  */
 
 import { logger } from '../utils/logger.js';
-import { generateFileName } from '../utils/file.js';
+import { generateFileName, extractFileNameFromUrl } from '../utils/file.js';
 import { triggerDownload } from '../utils/dom.js';
 
 /**
@@ -22,31 +22,19 @@ export const downloadImage = (url) => {
         return;
     }
 
-    // Determine file extension from URL if possible, default to jpeg
-    let fileExtension = 'jpeg';
+    // Default extension for images in Telegram is jpeg
+    let fileName = generateFileName(url, 'jpeg');
 
-    try {
-        const urlPath = new URL(url).pathname;
-        const lastSegment = urlPath.split('/').pop();
-
-        if (lastSegment && lastSegment.includes('.')) {
-            const extension = lastSegment.split('.').pop().toLowerCase();
-            // Only use common image extensions
-            if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(extension)) {
-                fileExtension = extension;
-            }
-        }
-    } catch (error) {
-        logger.error(`Error parsing URL for extension: ${error.message}`);
-        // Continue with default extension
+    // Try to extract a better file name from the URL
+    const extractedName = extractFileNameFromUrl(url, fileName);
+    if (extractedName !== fileName) {
+        fileName = extractedName;
+        logger.info(`Using extracted file name: ${fileName}`);
     }
 
-    // Generate a random file name with the determined extension
-    const fileName = (Math.random() + 1).toString(36).substring(2, 10) + '.' + fileExtension;
+    logger.info(`Starting image download: ${url}`, fileName);
 
-    logger.info(`Downloading image: ${url}`, fileName);
-
-    // For images, we can use a direct download approach
+    // For images, we can simply trigger a download directly
     triggerDownload(url, fileName);
 
     logger.info('Download triggered', fileName);

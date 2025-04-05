@@ -1,12 +1,11 @@
-/**
- * Telegram Media Downloader
- * @name Telegram Media Downloader
- * @description Download media from Telegram Web App
- * @version 1.0.0
- * @author Gaurav Porwal (refactored)
- * @match https://web.telegram.org/*
- * @grant none
- */
+// ==UserScript==
+// @name         Telegram Media Downloader by Gaurav
+// @version      1.0.0
+// @description  Download media from Telegram Web App
+// @author       Nestor Qin (refactored)
+// @match        https://web.telegram.org/*
+// @grant        none
+// ==/UserScript==
 
 import { setupProgressBarContainer } from './ui/progress-bar.js';
 import { startAllObservers } from './core/observer.js';

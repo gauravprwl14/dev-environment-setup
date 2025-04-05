@@ -6,7 +6,8 @@ const fs = require('fs');
 const extractTampermonkeyHeader = () => {
     const entryFile = path.resolve(__dirname, '../src/index.js');
     const content = fs.readFileSync(entryFile, 'utf8');
-    const headerMatch = content.match(/\/\*\*[\s\S]*?\*\//);
+    const headerRegex = /\/\/ ==UserScript==[\s\S]*?\/\/ ==\/UserScript==/;
+    const headerMatch = content.match(headerRegex);
     return headerMatch ? headerMatch[0] : '';
 };
 
@@ -46,7 +47,7 @@ module.exports = {
 
                             compilation.assets[filename] = {
                                 source: () => `${header}\n\n${source}`,
-                                size: () => asset.size() + header.length + 2
+                                size: () => asset.source().length + header.length + 2
                             };
                         }
                     }

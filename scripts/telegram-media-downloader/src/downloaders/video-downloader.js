@@ -1,195 +1,290 @@
 /**
  * Video downloader functionality
  * @module downloaders/video-downloader
+ * 
+ * WHAT THIS FILE DOES:
+ * -------------------
+ * This file handles the entire process of downloading videos from Telegram Web.
+ * 
+ * In simple terms, it:
+ * 1. Takes a video URL from Telegram
+ * 2. Downloads the video in small chunks to avoid memory issues
+ * 3. Shows a progress bar while downloading
+ * 4. Saves the video to your computer
+ * 
+ * Telegram often restricts downloading videos, especially in private channels.
+ * This module bypasses those restrictions by treating the video data as a stream
+ * and downloading it piece by piece.
+ * 
+ * TECHNICAL DETAILS:
+ * -----------------
+ * The module implements a chunked download strategy using Range requests.
+ * It supports two download methods:
+ * 1. File System Access API (modern browsers)
+ * 2. In-memory blob accumulation (fallback for older browsers)
+ * 
+ * The implementation handles different video formats, progress tracking,
+ * and error handling during the download process.
  */
 
-import { CONTENT_RANGE_REGEX } from '../constants/config.js';
 import { logger } from '../utils/logger.js';
-import { supportsFileSystemAccess, generateFileName, extractFileNameFromUrl } from '../utils/file.js';
-import { triggerDownload, createBlobUrl, revokeBlobUrl } from '../utils/dom.js';
 import { createProgressBar, updateProgress, completeProgress, abortProgress } from '../ui/progress-bar.js';
+import { generateRandomId, generateFileName } from '../utils/file.js';
 
 /**
- * Downloads a video from the provided URL
+ * Downloads a video from a given URL
  * @param {string} url - The URL of the video to download
  * @returns {void}
  * 
+ * HOW IT WORKS:
+ * 1. Takes a video URL from Telegram
+ * 2. Generates a unique ID and filename for the download
+ * 3. Tries to use the File System Access API if available:
+ *    - Opens a file save dialog for the user to choose where to save the file
+ *    - Downloads the video in chunks directly to the chosen file
+ * 4. Falls back to in-memory download if File System Access API is not available:
+ *    - Downloads the video in chunks, storing each chunk in memory
+ *    - Once all chunks are downloaded, combines them and triggers a download
+ * 5. Shows a progress bar throughout the process
+ * 6. Handles errors that might occur during download
+ * 
+ * The function has to handle different browser capabilities, network conditions,
+ * and various video formats that Telegram might use.
+ * 
  * @example
- * // Download a video from a URL
- * downloadVideo('https://example.com/video.mp4');
+ * // Download a video from a Telegram URL
+ * downloadVideo('https://web.telegram.org/k/stream/...');
  */
 export const downloadVideo = (url) => {
-    if (!url) {
-        logger.error('Video URL is empty or invalid');
-        return;
-    }
-
+    // Variables to track download state
     let blobs = [];
     let nextOffset = 0;
     let totalSize = null;
-    let fileExtension = 'mp4';
+    let fileExtension = 'mp4'; // Default extension
 
-    // Generate a unique ID for this download
-    const videoId = `${(Math.random() + 1).toString(36).substring(2, 10)}_${Date.now().toString()}`;
-
-    // Initial file name, will be updated if we can extract a better one
+    // Generate a unique ID for this download and a temporary filename
+    const videoId = generateRandomId();
     let fileName = generateFileName(url, fileExtension);
 
-    // Try to extract a better file name from the URL
-    const extractedName = extractFileNameFromUrl(url, fileName);
-    if (extractedName !== fileName) {
-        fileName = extractedName;
-        logger.info(`Using extracted file name: ${fileName}`, videoId);
+    // Try to extract the filename from Telegram stream URLs if available
+    // Some video src is in format: 'stream/{"dcId":5,"location":{...},"size":...,"mimeType":"video/mp4","fileName":"xxxx.MP4"}'
+    try {
+        const metadata = JSON.parse(decodeURIComponent(url.split('/')[url.split('/').length - 1]));
+        if (metadata.fileName) {
+            fileName = metadata.fileName;
+        }
+    } catch (e) {
+        // Invalid JSON string, pass extracting fileName
+        logger.info(`Could not extract filename from URL: ${e.message}`, fileName);
     }
 
-    logger.info(`Starting video download: ${url}`, fileName);
+    logger.info(`Starting download of video: ${url}`, fileName);
 
     /**
-     * Fetches the next part of the video
-     * @param {FileSystemWritableFileStream|null} writable - Writable stream for File System Access API
-     * @returns {Promise<void>}
+     * Fetches the next chunk of the video
+     * @param {FileSystemWritableFileStream|null} writable - File stream to write to (if using File System Access API)
+     * @private
+     * 
+     * HOW IT WORKS:
+     * 1. Makes a fetch request with a Range header to get only a portion of the video
+     * 2. Processes the response to extract content information (type, size)
+     * 3. Adds the chunk to either the file stream or the blobs array
+     * 4. Updates the progress bar with the current download progress
+     * 5. Recursively calls itself to fetch the next chunk until download is complete
+     * 6. Triggers the save process once all chunks are downloaded
+     * 
+     * Using Range requests allows downloading very large videos without memory issues,
+     * as only small parts of the video are in memory at any given time.
      */
-    const fetchNextPart = async (writable) => {
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    Range: `bytes=${nextOffset}-`,
-                    'User-Agent': 'User-Agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/117.0',
-                },
-            });
-
-            if (![200, 206].includes(response.status)) {
-                throw new Error(`Non 200/206 response was received: ${response.status}`);
-            }
-
-            const contentType = response.headers.get('Content-Type');
-            const mime = contentType ? contentType.split(';')[0] : '';
-
-            if (!mime.startsWith('video/')) {
-                throw new Error(`Get non-video response with MIME type ${mime}`);
-            }
-
-            // Update file extension based on MIME type if available
-            if (mime.includes('/')) {
-                const newExtension = mime.split('/')[1];
-                if (newExtension && fileExtension !== newExtension) {
-                    fileExtension = newExtension;
-                    fileName = fileName.substring(0, fileName.indexOf('.') + 1) + fileExtension;
-                    logger.info(`Updated file extension to ${fileExtension}`, fileName);
+    const fetchNextPart = (writable) => {
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                Range: `bytes=${nextOffset}-`,
+            },
+            'User-Agent': 'User-Agent Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/117.0',
+        })
+            .then((res) => {
+                if (![200, 206].includes(res.status)) {
+                    throw new Error(`Non 200/206 response was received: ${res.status}`);
                 }
-            }
 
-            const contentRange = response.headers.get('Content-Range');
-            if (!contentRange) {
-                throw new Error('No Content-Range header in response');
-            }
+                // Extract content type and update file extension if needed
+                const mime = res.headers.get('Content-Type').split(';')[0];
+                if (!mime.startsWith('video/')) {
+                    throw new Error(`Get non video response with MIME type ${mime}`);
+                }
 
-            const match = contentRange.match(CONTENT_RANGE_REGEX);
-            if (!match) {
-                throw new Error(`Invalid Content-Range format: ${contentRange}`);
-            }
+                fileExtension = mime.split('/')[1];
+                fileName = fileName.substring(0, fileName.indexOf('.') + 1) + fileExtension;
 
-            const startOffset = parseInt(match[1]);
-            const endOffset = parseInt(match[2]);
-            const totalSizeFromHeader = parseInt(match[3]);
+                // Parse Content-Range header
+                const contentRange = res.headers.get('Content-Range');
+                const match = contentRange.match(/^bytes (\d+)-(\d+)\/(\d+)$/);
 
-            if (startOffset !== nextOffset) {
-                logger.error(`Gap detected between responses. Last offset: ${nextOffset}, New start offset: ${startOffset}`, fileName);
-                throw new Error('Gap detected between responses');
-            }
+                if (!match) {
+                    throw new Error(`Invalid Content-Range format: ${contentRange}`);
+                }
 
-            if (totalSize && totalSizeFromHeader !== totalSize) {
-                logger.error(`Total size differs. Previous: ${totalSize}, Current: ${totalSizeFromHeader}`, fileName);
-                throw new Error('Total size differs');
-            }
+                const startOffset = parseInt(match[1]);
+                const endOffset = parseInt(match[2]);
+                const totalSize = parseInt(match[3]);
 
-            nextOffset = endOffset + 1;
-            totalSize = totalSizeFromHeader;
+                // Validate the response range
+                if (startOffset !== nextOffset) {
+                    logger.error(`Gap detected between responses. Last offset: ${nextOffset}, New start offset: ${startOffset}`, fileName);
+                    throw new Error('Gap detected between responses.');
+                }
 
-            logger.info(`Received ${response.headers.get('Content-Length')} bytes from ${contentRange}`, fileName);
+                // Update download state
+                nextOffset = endOffset + 1;
+                totalSize = totalSize;
 
-            const progressPercentage = ((nextOffset * 100) / totalSize).toFixed(0);
-            logger.info(`Progress: ${progressPercentage}%`, fileName);
-            updateProgress(videoId, fileName, progressPercentage);
+                logger.info(
+                    `Received chunk: ${res.headers.get('Content-Length')} bytes from ${contentRange}`,
+                    fileName
+                );
 
-            const resBlob = await response.blob();
+                // Calculate and update progress
+                const progress = ((nextOffset * 100) / totalSize).toFixed(0);
+                logger.info(`Download progress: ${progress}%`, fileName);
+                updateProgress(videoId, fileName, progress);
 
-            if (writable !== null) {
-                await writable.write(resBlob);
-            } else {
-                blobs.push(resBlob);
-            }
-
-            if (!totalSize) {
-                throw new Error('Total size is NULL');
-            }
-
-            if (nextOffset < totalSize) {
-                fetchNextPart(writable);
-            } else {
+                return res.blob();
+            })
+            .then((resBlob) => {
                 if (writable !== null) {
-                    await writable.close();
-                    logger.info('Download finished using File System Access API', fileName);
+                    // Writing directly to file (File System Access API)
+                    writable.write(resBlob).then(() => {
+                        logger.info(`Chunk written to file, size: ${resBlob.size} bytes`, fileName);
+                    });
                 } else {
-                    saveBlobs();
+                    // Storing blob in memory (fallback method)
+                    blobs.push(resBlob);
                 }
-                completeProgress(videoId);
-            }
-        } catch (error) {
-            logger.error(`Error downloading video: ${error.message}`, fileName);
-            abortProgress(videoId);
-        }
+            })
+            .then(() => {
+                if (!totalSize) {
+                    throw new Error('Total size is NULL');
+                }
+
+                if (nextOffset < totalSize) {
+                    // Continue downloading the next chunk
+                    fetchNextPart(writable);
+                } else {
+                    // Download complete
+                    if (writable !== null) {
+                        writable.close().then(() => {
+                            logger.info('File System API: Download finished and file saved', fileName);
+                        });
+                    } else {
+                        // Save the accumulated blobs
+                        saveBlobs();
+                    }
+                    completeProgress(videoId);
+                }
+            })
+            .catch((reason) => {
+                logger.error(`Download failed: ${reason}`, fileName);
+                abortProgress(videoId);
+            });
     };
 
     /**
-     * Saves the accumulated blobs as a downloaded file
+     * Saves all accumulated blobs as a download
+     * @private
+     * 
+     * HOW IT WORKS:
+     * 1. Combines all downloaded chunks into a single Blob
+     * 2. Creates a URL for this Blob
+     * 3. Creates a temporary download link and triggers a click
+     * 4. Cleans up the URL and temporary elements
+     * 
+     * This is the fallback method used when the File System Access API
+     * is not available. It has memory limitations for very large files.
      */
     const saveBlobs = () => {
-        logger.info('Concatenating blobs and downloading...', fileName);
+        logger.info('Combining blobs and preparing download', fileName);
 
+        // Create a single blob from all chunks
         const blob = new Blob(blobs, { type: `video/${fileExtension}` });
-        const blobUrl = createBlobUrl(blob, `video/${fileExtension}`);
+        const blobUrl = window.URL.createObjectURL(blob);
 
         logger.info(`Final blob size: ${blob.size} bytes`, fileName);
 
-        triggerDownload(blobUrl, fileName);
-        revokeBlobUrl(blobUrl);
+        // Create a download link and trigger it
+        const a = document.createElement('a');
+        document.body.appendChild(a);
+        a.href = blobUrl;
+        a.download = fileName;
+        a.click();
 
-        // Clear the blobs array to free memory
-        blobs = [];
+        // Clean up
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+        blobs = []; // Free memory
 
         logger.info('Download triggered', fileName);
     };
 
-    // Create progress bar first
+    /**
+     * Determines if the File System Access API is available
+     * @private
+     * @returns {boolean} True if the API is available and usable
+     * 
+     * HOW IT WORKS:
+     * Checks if the browser supports the File System Access API
+     * and if we're in a context where it can be used (top-level frame).
+     */
+    const supportsFileSystemAccess =
+        'showSaveFilePicker' in window &&
+        (() => {
+            try {
+                return window.self === window.top;
+            } catch {
+                return false;
+            }
+        })();
+
+    // Create a progress bar for this download
     createProgressBar(videoId, fileName);
 
-    // Check if File System Access API is supported
-    if (supportsFileSystemAccess()) {
+    // Choose download method based on browser capabilities
+    if (supportsFileSystemAccess) {
+        logger.info('Using File System Access API for download', fileName);
+
+        // Show file save dialog
         window.showSaveFilePicker({
             suggestedName: fileName,
+            types: [{
+                description: 'Video Files',
+                accept: {
+                    'video/*': [`.${fileExtension}`]
+                }
+            }]
         })
             .then(handle => {
-                handle.createWritable()
-                    .then(writable => {
-                        fetchNextPart(writable);
-                    })
-                    .catch(err => {
-                        logger.error(`Error creating writable: ${err.message}`, fileName);
-                        // Fall back to blob method
-                        fetchNextPart(null);
-                    });
+                return handle.createWritable();
+            })
+            .then(writable => {
+                // Start downloading chunks directly to the file
+                fetchNextPart(writable);
             })
             .catch(err => {
-                if (err.name !== 'AbortError') {
-                    logger.error(`Error with file picker: ${err.message}`, fileName);
+                if (err.name === 'AbortError') {
+                    // User canceled the save dialog
+                    logger.info('User canceled save dialog', fileName);
+                    abortProgress(videoId);
+                } else {
+                    // Other errors
+                    logger.error(`File System Access API error: ${err.name} - ${err.message}`, fileName);
+                    // Fallback to blob method
+                    logger.info('Falling back to in-memory download method', fileName);
+                    fetchNextPart(null);
                 }
-                // User might have cancelled, fall back to blob method
-                fetchNextPart(null);
             });
     } else {
-        // If File System Access API is not supported, use the blob method
+        logger.info('File System Access API not available, using in-memory download', fileName);
         fetchNextPart(null);
     }
 };
