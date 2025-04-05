@@ -2,7 +2,7 @@
 // @name         Telegram Media Downloader by Gaurav
 // @version      1.0.0
 // @description  Download media from Telegram Web App
-// @author       Nestor Qin (refactored)
+// @author       Gaurav Porwal (refactored)
 // @match        https://web.telegram.org/*
 // @grant        none
 // ==/UserScript==

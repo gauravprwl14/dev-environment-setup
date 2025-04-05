@@ -49,6 +49,24 @@ export const supportsFileSystemAccess = () => {
 };
 
 /**
+ * Generate a random ID string that can be used for unique identifiers
+ * @param {string} [prefix=''] - Optional prefix for the ID
+ * @returns {string} A randomly generated unique ID string
+ * 
+ * @example
+ * // Returns a random ID like "a7b3c9_1617823456789"
+ * const id = generateRandomId();
+ * 
+ * // Returns a random ID with prefix like "download_a7b3c9_1617823456789"
+ * const downloadId = generateRandomId('download_');
+ */
+export const generateRandomId = (prefix = '') => {
+    const randomPart = (Math.random() + 1).toString(36).substring(2, 10);
+    const timestamp = Date.now().toString();
+    return `${prefix}${randomPart}_${timestamp}`;
+};
+
+/**
  * Generate a file name with a random component and extension
  * @param {string} url - The URL or identifier to use for hashing
  * @param {string} extension - The file extension to use
@@ -60,16 +78,22 @@ export const supportsFileSystemAccess = () => {
  * // Output: "a1b2c3d4.mp4"
  */
 export const generateFileName = (url, extension) => {
+    // Add date and timestamp in standard format
+    const now = new Date();
+    const dateTimestamp = now.toISOString()
+        .replace(/:/g, '-')
+        .replace(/\..+/, ''); // Remove milliseconds
+
     // For a random component, use a timestamp + random string
     const randomComponent = (Math.random() + 1).toString(36).substring(2, 10);
 
     if (url) {
         // Use the hash code approach for consistency based on URL
-        return `${hashCode(url).toString(36)}.${extension}`;
+        return `${dateTimestamp}_${hashCode(url).toString(36)}.${extension}`;
     }
 
-    // Fallback to just a random name
-    return `${randomComponent}.${extension}`;
+    // Fallback to just a random name with timestamp
+    return `${dateTimestamp}_${randomComponent}.${extension}`;
 };
 
 /**

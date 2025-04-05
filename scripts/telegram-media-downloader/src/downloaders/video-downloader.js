@@ -62,6 +62,12 @@ export const downloadVideo = (url) => {
     let totalSize = null;
     let fileExtension = 'mp4'; // Default extension
 
+    logger.info('Starting video download', url);
+    // if (!url) {
+    //     logger.error('Video URL is empty or invalid');
+    //     return;
+    // }
+
     // Generate a unique ID for this download and a temporary filename
     const videoId = generateRandomId();
     let fileName = generateFileName(url, fileExtension);
@@ -116,7 +122,14 @@ export const downloadVideo = (url) => {
                 }
 
                 fileExtension = mime.split('/')[1];
-                fileName = fileName.substring(0, fileName.indexOf('.') + 1) + fileExtension;
+                // Update file extension and add timestamp to filename
+                const now = new Date();
+                const timestamp = now.toISOString()
+                    .replace(/:/g, '-')
+                    .replace(/\..+/, ''); // Remove milliseconds
+
+                const baseName = fileName.substring(0, fileName.indexOf('.'));
+                fileName = `${baseName}_${timestamp}.${fileExtension}`;
 
                 // Parse Content-Range header
                 const contentRange = res.headers.get('Content-Range');
