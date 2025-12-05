@@ -18,16 +18,24 @@ cd "$(dirname "$0")"
 # ./sdk/fvm.sh
 # ./sdk/dart.sh
 # ./sdk/flutter.sh
-./sdk/miniconda.sh
+# ./sdk/miniconda.sh
 
 
 # Apps
 # ./sdk/apps/db/postgres.sh
 # ./sdk/apps/db/mysql.sh
 # ./sdk/apps/redis.sh
-# ./sdk/apps/ngrok.sh
-# ./sdk/apps/telegram.sh
-# ./sdk/apps/vlc.sh
+./sdk/apps/ngrok.sh
+./sdk/apps/telegram.sh
+./sdk/apps/vlc.sh
+./sdk/apps/dbeaver.sh
+./sdk/apps/podman_desktop.sh
+./sdk/apps/postman.sh
+./sdk/apps/figma.sh
+# ./sdk/apps/cursor.sh
+# ./sdk/apps/claude.sh
+./sdk/apps/kdenlive.sh
+./sdk/apps/obs.sh
 
 
 echo " All installations complete. Exiting..."
