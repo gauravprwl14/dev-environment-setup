@@ -10,6 +10,7 @@ cd "$(dirname "$0")"
 # ./sdk/mas.sh
 # ./sdk/nvm.sh
 # ./sdk/node.sh
+# ./sdk/yarn.sh
 # ./sdk/java.sh
 # ./sdk/android_studio.sh
 # ./sdk/xcode.sh
@@ -25,17 +26,20 @@ cd "$(dirname "$0")"
 # ./sdk/apps/db/postgres.sh
 # ./sdk/apps/db/mysql.sh
 # ./sdk/apps/redis.sh
-./sdk/apps/ngrok.sh
-./sdk/apps/telegram.sh
-./sdk/apps/vlc.sh
-./sdk/apps/dbeaver.sh
-./sdk/apps/podman_desktop.sh
-./sdk/apps/postman.sh
-./sdk/apps/figma.sh
+# ./sdk/apps/ngrok.sh
+# ./sdk/apps/telegram.sh
+# ./sdk/apps/vlc.sh
+# ./sdk/apps/dbeaver.sh
+./sdk/apps/podman.sh
+# ./sdk/apps/podman_desktop.sh
+# ./sdk/apps/postman.sh
+# ./sdk/apps/figma.sh
 # ./sdk/apps/cursor.sh
 # ./sdk/apps/claude.sh
-./sdk/apps/kdenlive.sh
-./sdk/apps/obs.sh
+# ./sdk/apps/kdenlive.sh
+# ./sdk/apps/obs.sh
+# ./sdk/apps/openvpn.sh
+# ./sdk/apps/obsidian.sh
 
 
 echo " All installations complete. Exiting..."
