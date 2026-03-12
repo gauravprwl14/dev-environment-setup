@@ -1,0 +1,10 @@
+{
+  "name": "tweet-generator",
+  "description": "Generate viral tweet threads (5-12 tweets each) from content ideas",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["twitter", "x", "threads", "tweets"],
+  "skills": ["./"]
+}
