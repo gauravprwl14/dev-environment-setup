@@ -1,0 +1,10 @@
+{
+  "name": "obsidian-note",
+  "description": "Create an Obsidian vault note from a content summary with wikilinks, callouts, and frontmatter",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["obsidian", "vault", "notes", "wikilinks"],
+  "skills": ["./"]
+}
