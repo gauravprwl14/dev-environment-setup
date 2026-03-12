@@ -1,0 +1,10 @@
+{
+  "name": "content-ideas",
+  "description": "Generate 5-10 content ideas with image concepts from a content summary",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["content", "ideas", "brainstorm", "social-media"],
+  "skills": ["./"]
+}
