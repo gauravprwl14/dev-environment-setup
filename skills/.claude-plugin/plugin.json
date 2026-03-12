@@ -1,0 +1,21 @@
+{
+  "name": "youtube-content-pipeline",
+  "description": "Multi-agent YouTube content pipeline — transcript, summary, ideas, images, social posts",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["youtube", "content", "pipeline", "social-media", "obsidian"],
+  "skills": [
+    "./yt-transcript",
+    "./content-summarizer",
+    "./obsidian-note",
+    "./obsidian-vault-guide",
+    "./content-ideas",
+    "./image-generator",
+    "./social-posts",
+    "./tweet-generator",
+    "./youtube-pipeline",
+    "./skill-scaffold"
+  ]
+}
