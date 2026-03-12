@@ -1,0 +1,23 @@
+{
+  "name": "hashnode-scripts",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Hashnode GraphQL API client for blog publishing",
+  "main": "publish-post.js",
+  "scripts": {
+    "publish": "node publish-draft.js"
+  },
+  "dependencies": {
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.4.1"
+  },
+  "keywords": [
+    "hashnode",
+    "graphql",
+    "blog",
+    "publishing",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT"
+}
