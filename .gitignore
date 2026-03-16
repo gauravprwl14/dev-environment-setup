@@ -82,6 +82,8 @@ eggs/
 .eggs/
 lib/
 lib64/
+!utility-scripts/**/lib/
+!utility-scripts/**/lib/**
 !setup/lib/
 parts/
 sdist/
