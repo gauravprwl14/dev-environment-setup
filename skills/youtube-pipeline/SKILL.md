@@ -96,7 +96,7 @@ fi
 - **Output check**: verify that `<output-dir>/ideas.md` exists and is non-empty
 - If the file is missing or empty → apply the [Step Failure Protocol](#step-failure-protocol)
 - **Confirmation gate** (skip if `--no-confirm`): Use the AskUserQuestion tool:
-  `"Content ideas generated at <path>/ideas.md. Continue to image generation? (y/n)"`
+  `"Content ideas generated at <path>/ideas.md. Continue to the next step? (y/n)"`
   - If user answers `n` → stop and show the [Pipeline Summary](#pipeline-summary)
 
 ### Step 4b: Gemini Prompt Generation (when `GEMINI_API_KEY` is not set, unless `--skip-images`)
