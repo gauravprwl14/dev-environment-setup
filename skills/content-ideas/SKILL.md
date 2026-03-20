@@ -75,9 +75,10 @@ type: content-ideas
 📊 Platforms: <breakdown>
 
 Next steps:
+- `/gemini-prompt-generator <path>/ideas.md` — Generate Gemini image prompts (no API key needed)
+- `/image-generator <path>/ideas.md` — Generate images automatically via API
 - `/social-posts <path>/ideas.md` — Generate ready-to-post social content
 - `/tweet-generator <path>/ideas.md` — Generate tweet threads
-- `/image-generator <path>/ideas.md` — Generate images for each idea
 ```
 
 ## Quality Rules
