@@ -25,7 +25,7 @@ HASHNODE_PUBLICATION_ID=your-publication-id
 ### Step 1: Create a Draft
 
 ```bash
-cd /home/ubuntu/Sites/projects/gp/dev-environment-setup/skills/hashnode/scripts
+cd "$(dirname "${CLAUDE_PLUGIN_ROOT:-$HOME/.agents/skills/hashnode}")/scripts" 2>/dev/null || true
 node create-draft.js /path/to/article.md
 ```
 

@@ -25,7 +25,7 @@ Extract from `$ARGUMENTS`:
 
 ## Task Execution
 
-1. **Determine output directory**: Use `skills/` relative to the project root at `/home/ubuntu/Sites/projects/gp/dev-environment-setup/skills/`
+1. **Determine output directory**: Use `skills/` relative to the current project root (where this skill is installed)
 
 2. **Create directory structure**:
    ```
