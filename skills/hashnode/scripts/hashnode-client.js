@@ -59,22 +59,25 @@ export async function hashnodeRequest(query, variables) {
  * @returns {Promise<Array>} Tag objects with id, name, slug
  */
 export async function searchTags(searchTerm, limit = 20) {
+  // Hashnode API v2 looks up tags by exact slug — there is no fuzzy search endpoint.
+  // Tags in front-matter are expected to be slugs (e.g. "nodejs", "javascript").
   const query = `
-    query SearchTags($searchTerm: String!, $first: Int!) {
-      tags(first: $first, filter: { searchTerm: $searchTerm }) {
-        edges {
-          node {
-            id
-            name
-            slug
-          }
-        }
+    query LookupTag($slug: String!) {
+      tag(slug: $slug) {
+        id
+        name
+        slug
       }
     }
   `;
 
-  const data = await hashnodeRequest(query, { searchTerm, first: limit });
-  return data.tags.edges.map(e => e.node);
+  const slug = searchTerm.toLowerCase().replace(/\s+/g, '-');
+  try {
+    const data = await hashnodeRequest(query, { slug });
+    return data.tag ? [data.tag] : [];
+  } catch {
+    return [];
+  }
 }
 
 /**

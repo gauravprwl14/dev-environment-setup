@@ -82,7 +82,7 @@ export async function publishToHashnode(post) {
 
   // Add optional fields
   if (subtitle) input.subtitle = subtitle;
-  if (brief) input.brief = brief;
+  // Note: 'brief' is not part of Hashnode's CreateDraftInput — omitted
   if (coverImageURL) {
     input.coverImageOptions = { coverImageURL };
   }

@@ -40,11 +40,14 @@ except ImportError:
 #   "
 # ---------------------------------------------------------------------------
 GEMINI_IMAGE_MODELS = [
-    "gemini-2.0-flash-exp-image-generation",  # Gemini 2.0 Flash with image generation
-    "gemini-2.0-flash-exp",                   # Gemini 2.0 Flash experimental (may support image output)
-    "imagen-3.0-generate-002",                # Imagen 3 via Gemini API (high quality)
-    "imagen-3.0-generate-001",                # Imagen 3 (previous stable)
-    "imagegeneration@006",                    # Imagen via Vertex-compatible endpoint
+    # Gemini multimodal models (work on free tier — tried first)
+    "gemini-2.5-flash-image",                 # Gemini 2.5 Flash with image output
+    "gemini-3.1-flash-image-preview",         # Gemini 3.1 Flash image preview
+    "gemini-3-pro-image-preview",             # Gemini 3 Pro image preview
+    # Imagen 4 models (higher quality, require paid Google AI plan)
+    "imagen-4.0-fast-generate-001",           # Imagen 4 Fast (lowest latency)
+    "imagen-4.0-generate-001",                # Imagen 4 (high quality)
+    "imagen-4.0-ultra-generate-001",          # Imagen 4 Ultra (highest quality)
 ]
 
 
@@ -187,6 +190,55 @@ def pick_model(client) -> str | None:
 # Image generation
 # ---------------------------------------------------------------------------
 
+def _aspect_ratio_str(w: int, h: int) -> str:
+    """Return the closest Imagen-supported aspect ratio string for w x h."""
+    ratio = w / h
+    # Imagen 4 supported aspect ratios: 1:1, 3:4, 4:3, 9:16, 16:9
+    candidates = {
+        "1:1": 1.0,
+        "4:3": 4 / 3,
+        "3:4": 3 / 4,
+        "16:9": 16 / 9,
+        "9:16": 9 / 16,
+    }
+    return min(candidates, key=lambda k: abs(candidates[k] - ratio))
+
+
+def _call_api(client, genai, model: str, prompt: str, w: int, h: int) -> bytes | None:
+    """Call the appropriate API based on model type. Returns raw image bytes or None."""
+    if model.startswith("imagen"):
+        # Imagen models use generate_images(), not generate_content()
+        aspect = _aspect_ratio_str(w, h)
+        response = client.models.generate_images(
+            model=model,
+            prompt=prompt,
+            config=genai.types.GenerateImagesConfig(
+                number_of_images=1,
+                aspect_ratio=aspect,
+            ),
+        )
+        if response.generated_images:
+            return response.generated_images[0].image.image_bytes
+        return None
+    else:
+        # Gemini multimodal models use generate_content() with IMAGE modality
+        response = client.models.generate_content(
+            model=model,
+            contents=(
+                f"Generate an image: {prompt}. "
+                f"Aspect ratio suitable for {w}x{h} pixels."
+            ),
+            config=genai.types.GenerateContentConfig(
+                response_modalities=["IMAGE", "TEXT"],
+            ),
+        )
+        if response.candidates:
+            for part in response.candidates[0].content.parts:
+                if part.inline_data and part.inline_data.mime_type.startswith("image/"):
+                    return part.inline_data.data
+        return None
+
+
 def generate_images_for_prompt(
     client,
     genai,
@@ -207,30 +259,18 @@ def generate_images_for_prompt(
         print(f"  Generating {w}x{h}: {filename}...")
 
         try:
-            image_bytes = None
+            image_bytes = _call_api(client, genai, model, prompt, w, h)
 
-            response = client.models.generate_content(
-                model=model,
-                contents=(
-                    f"Generate an image: {prompt}. "
-                    f"Aspect ratio suitable for {w}x{h} pixels."
-                ),
-                config=genai.types.GenerateContentConfig(
-                    response_modalities=["IMAGE", "TEXT"],
-                ),
-            )
-
-            if response.candidates:
-                for part in response.candidates[0].content.parts:
-                    if part.inline_data and part.inline_data.mime_type.startswith("image/"):
-                        image_bytes = part.inline_data.data
-                        break
+            if not image_bytes:
+                # Retry once
+                print(f"    No image returned, retrying {w}x{h}...")
+                image_bytes = _call_api(client, genai, model, prompt, w, h)
 
             if image_bytes:
                 with open(filepath, "wb") as f:
                     f.write(image_bytes)
 
-                # Resize to exact dimensions if Pillow is available
+                # Resize to exact dimensions if needed
                 try:
                     from PIL import Image
                     img = Image.open(filepath)
@@ -238,10 +278,7 @@ def generate_images_for_prompt(
                         img = img.resize((w, h), Image.LANCZOS)
                         img.save(filepath, "PNG")
                 except ImportError:
-                    print(
-                        f"    Warning: Pillow not installed, skipping resize to {w}x{h}.",
-                        file=sys.stderr,
-                    )
+                    pass  # Pillow optional — image saved at native resolution
 
                 generated_files.append({
                     "path": filename,
@@ -255,24 +292,9 @@ def generate_images_for_prompt(
 
         except Exception as e:
             print(f"    Error generating {w}x{h}: {e}", file=sys.stderr)
-            # Retry once
             try:
                 print(f"    Retrying {w}x{h}...")
-                response = client.models.generate_content(
-                    model=model,
-                    contents=(
-                        f"Generate an image: {prompt}. "
-                        f"Aspect ratio suitable for {w}x{h} pixels."
-                    ),
-                    config=genai.types.GenerateContentConfig(
-                        response_modalities=["IMAGE", "TEXT"],
-                    ),
-                )
-                if response.candidates:
-                    for part in response.candidates[0].content.parts:
-                        if part.inline_data and part.inline_data.mime_type.startswith("image/"):
-                            image_bytes = part.inline_data.data
-                            break
+                image_bytes = _call_api(client, genai, model, prompt, w, h)
                 if image_bytes:
                     with open(filepath, "wb") as f:
                         f.write(image_bytes)
