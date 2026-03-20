@@ -25,75 +25,37 @@ Skills work as Claude Code slash commands: `/youtube-pipeline`, `/yt-transcript`
 
 ---
 
-## Install Steps
+## Quick Install (automated)
 
 ### 1. Clone the repo
 
 ```bash
 git clone https://github.com/gauravprwl14/dev-environment-setup.git
-cd dev-environment-setup
 ```
 
-### 2. Install skills into your Claude Code project
+### 2. Run the installer from your target project directory
 
-Navigate to the project where you want the skills, then:
-
-```bash
-npx skills install /path/to/dev-environment-setup/skills --yes
-```
-
-This installs all 17 skills to `.agents/skills/` in your current directory and makes them available as `/commands` in Claude Code.
-
-**Example:**
 ```bash
 cd ~/my-content-project
-npx skills install ~/dev-environment-setup/skills --yes
+bash ~/dev-environment-setup/skills/install.sh
 ```
 
-### 3. Install Python dependencies
+The installer:
+- Checks all system dependencies (Node.js ≥16, Python ≥3.8, pip, npm, yt-dlp)
+- Installs Python packages from `requirements.txt`
+- Installs Node.js packages for Hashnode
+- Installs all 17 skills via `npx skills`
+- Creates `~/.config/content-pipeline/.env` with placeholders
+
+### 3. Add your API keys
 
 ```bash
-pip install \
-  "youtube-transcript-api>=1.2.4" \
-  yt-dlp \
-  "google-genai>=1.0.0" \
-  "Pillow>=10.0.0"
+nano ~/.config/content-pipeline/.env
 ```
 
-### 4. Install Node.js dependencies (for Hashnode publishing)
+See [API Keys Reference](#api-keys-reference) below.
 
-```bash
-cd /path/to/dev-environment-setup/skills/hashnode/scripts
-npm install
-```
-
-### 5. Configure API keys
-
-Create the shared pipeline config:
-
-```bash
-mkdir -p ~/.config/content-pipeline
-cat > ~/.config/content-pipeline/.env << 'EOF'
-# Output directory for all pipeline files
-CONTENT_PIPELINE_OUTPUT=~/my-content-project/output
-
-# Obsidian vault (optional — skip with --skip-obsidian if not using Obsidian)
-OBSIDIAN_VAULT_PATH=~/path/to/obsidian/vault
-
-# Gemini API key — required for /image-generator
-# Get from: https://aistudio.google.com/app/apikey
-# Note: Image generation requires billing enabled on your Google Cloud project
-GEMINI_API_KEY=your-key-here
-
-# Hashnode — required for /hashnode
-# Personal Access Token: https://hashnode.com/settings/developer
-HASHNODE_API_KEY=your-token-here
-# Publication ID from dashboard URL: hashnode.com/dashboards/<ID>/general
-HASHNODE_PUBLICATION_ID=your-publication-id-here
-EOF
-```
-
-### 6. Open in Claude Code and test
+### 4. Open in Claude Code and test
 
 ```bash
 claude .
@@ -105,6 +67,33 @@ Then in Claude Code:
 ```
 
 Expected: transcript extracted and saved to `output/<date>-<slug>/transcript.md`.
+
+---
+
+## Installer Options
+
+```bash
+# Check dependencies only — don't install anything
+bash skills/install.sh --check
+
+# Install skills only (skip pip/npm installs)
+bash skills/install.sh --skills-only
+
+# Create config file only
+bash skills/install.sh --config-only
+
+# Set a custom output directory
+bash skills/install.sh --output-dir ~/my-output
+
+# Show all options
+bash skills/install.sh --help
+```
+
+---
+
+## Manual Install Steps
+
+If you prefer to install step-by-step:
 
 ---
 
