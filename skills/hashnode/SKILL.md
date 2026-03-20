@@ -141,7 +141,7 @@ Common tag IDs (see `references/tag-ids.md` for full list):
 - Cover images must be publicly accessible URLs
 - Tags require both ID and slug (use tag lookup query)
 - Publishing requires explicit user command + confirmation
-- All publish actions logged to `~/.openclaw/workspace/hashnode-publish-log.json`
+- All publish actions logged to `~/.config/content-pipeline/logs/hashnode-publish-log.json` (override with `CONTENT_PIPELINE_LOG_DIR` env var)
 - Supports GitHub Flavored Markdown (GFM)
 
 ## Safety Features

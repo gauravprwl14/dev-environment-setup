@@ -119,7 +119,8 @@ function askConfirmation(question) {
  * @param {object} post - Published post object
  */
 function logPublishAction(post) {
-  const logDir = path.join(os.homedir(), '.openclaw', 'workspace');
+  const logDir = process.env.CONTENT_PIPELINE_LOG_DIR ||
+    path.join(os.homedir(), '.config', 'content-pipeline', 'logs');
   const logFile = path.join(logDir, 'hashnode-publish-log.json');
 
   let logs = [];

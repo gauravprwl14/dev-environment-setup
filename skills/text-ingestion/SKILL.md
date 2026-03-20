@@ -56,10 +56,10 @@ Classify the file as one of two types:
 ### 4. Determine output path
 
 ```
-obsidian-vault/Ved/content/<YYYY-MM-DD>-<slug>/source.md
+$OBSIDIAN_VAULT_PATH/content/<YYYY-MM-DD>-<slug>/source.md
 ```
 
-Resolve relative to the vault root: `$OBSIDIAN_VAULT_PATH/content/`
+Read `OBSIDIAN_VAULT_PATH` from the `~/.config/content-pipeline/.env` file (or shell env). Default: `~/obsidian`.
 
 Create the folder if it does not exist.
 
