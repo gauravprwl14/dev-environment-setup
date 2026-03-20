@@ -24,7 +24,7 @@ Extract from `$ARGUMENTS`:
 - `--only=<list>` → comma-separated list of steps to run (e.g., `--only=transcript,summary`)
 - `--no-confirm` → skip user confirmation gates between steps
 
-Valid step names for `--only`: `transcript`, `summary`, `obsidian`, `ideas`, `images`, `social`, `tweets`
+Valid step names for `--only`: `transcript`, `summary`, `obsidian`, `ideas`, `prompts`, `images`, `social`, `tweets`
 
 ### `--only` Flag Validation
 
@@ -35,7 +35,7 @@ If any name is invalid, output this error and STOP immediately — do not run an
 ```
 Error: Invalid step name(s) in --only: "<name1>", "<name2>"
 
-Valid step names are: transcript, summary, obsidian, ideas, images, social, tweets
+Valid step names are: transcript, summary, obsidian, ideas, prompts, images, social, tweets
 
 Example: --only=transcript,summary,ideas
 ```
@@ -99,8 +99,22 @@ fi
   `"Content ideas generated at <path>/ideas.md. Continue to image generation? (y/n)"`
   - If user answers `n` → stop and show the [Pipeline Summary](#pipeline-summary)
 
+### Step 4b: Gemini Prompt Generation (when `GEMINI_API_KEY` is not set, unless `--skip-images`)
+
+Skip this step entirely if `--skip-images` is set.
+
+Check for `GEMINI_API_KEY`:
+- **If set:** proceed directly to Step 5 (image-generator will handle image creation).
+- **If not set:**
+  1. Run: `Skill("gemini-prompt-generator", "<output-dir>/ideas.md")`
+  2. **Output check:** verify that `<output-dir>/prompts.md` exists and is non-empty
+  3. If missing or empty → apply the [Step Failure Protocol](#step-failure-protocol)
+  4. **Confirmation gate** (skip if `--no-confirm`): Use the AskUserQuestion tool:
+     `"Prompts saved to prompts.md. Open it, paste prompts into gemini.google.com, save images to <output-dir>/images/. Ready to continue to social posts? (y/n)"`
+  5. If user answers `y` → continue to Step 6 (skip Step 5, no API key available)
+  6. If user answers `n` → stop and show the [Pipeline Summary](#pipeline-summary)
+
 ### Step 5: Image Generation (unless `--skip-images`)
-- Check if `GEMINI_API_KEY` is available; if not: warn and skip, continue to Step 6
 - Count how many image prompts are in `ideas.md` (one per idea block)
 - **Confirmation gate — ALWAYS show this, even when `--no-confirm` is set** (image generation incurs API cost): Use the AskUserQuestion tool:
   `"About to generate <N> images using Gemini API (2 sizes per idea = <2N> total files). This may incur API costs. Continue? (y/n)"`
@@ -168,6 +182,7 @@ Steps completed:
   [x] summary      → summary.md
   [x] obsidian     → <vault-note>.md (or [skipped] / [failed])
   [x] ideas        → ideas.md
+  [ ] prompts      → prompts.md (or [skipped] / [failed])
   [x] images       → images/ (or [skipped] / [failed])
   [x] social       → social-posts.md
   [x] tweets       → tweets.md
