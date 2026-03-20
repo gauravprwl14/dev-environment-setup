@@ -38,7 +38,7 @@ type: social-posts
 **From idea:** #<idea-number>
 **Image:** <image filename from manifest, or "Generate with /image-generator">
 
-<Post text — max 280 characters. Punchy, direct, no fluff.>
+<Post text — aim for 280 characters or under. Punchy, direct, no fluff. Claude will count carefully; verify the final count in your scheduling tool before posting.>
 
 ---
 
@@ -92,7 +92,7 @@ Next: Copy posts to your scheduling tool, or run `/tweet-generator <path>/ideas.
 ```
 
 ## Quality Rules for X Posts
-- MUST be under 280 characters (count precisely)
+- Target under 280 characters — Claude will count carefully, but verify the final count in your scheduling tool before posting
 - Lead with the hook — no preamble
 - Use line breaks for readability
 - No hashtags in X posts (they reduce reach)

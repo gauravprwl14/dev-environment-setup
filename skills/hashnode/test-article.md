@@ -4,7 +4,6 @@ subtitle: Testing the automated publishing workflow
 brief: A test article to verify the Hashnode publishing skill is working correctly
 coverImage: https://cdn.hashnode.com/res/hashnode/image/upload/v1623576843425/RJxNz4iKp.png
 tags: nodejs,automation,testing
-publish: false
 ---
 
 ## Introduction

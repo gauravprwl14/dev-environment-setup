@@ -5,7 +5,8 @@
   "description": "Hashnode GraphQL API client for blog publishing",
   "main": "publish-post.js",
   "scripts": {
-    "publish": "node publish-draft.js"
+    "create-draft": "node create-draft.js",
+    "publish-draft": "node publish-existing-draft.js"
   },
   "dependencies": {
     "node-fetch": "^3.3.2",

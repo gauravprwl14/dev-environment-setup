@@ -87,7 +87,7 @@ Tip: Post threads using Typefully, Buffer, or manually via X.
 ```
 
 ## Quality Rules
-- Every tweet MUST be under 280 characters (STRICTLY enforced — count each one)
+- Every tweet should be under 280 characters — Claude will count each one carefully, but verify counts in your scheduling tool before posting (X counts URLs as 23 characters regardless of length)
 - Tweet 1/ is EVERYTHING — must hook immediately
 - Each tweet should standalone but flow as a narrative
 - Use numbered format: 1/, 2/, 3/ etc.

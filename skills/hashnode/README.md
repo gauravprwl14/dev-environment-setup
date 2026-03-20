@@ -24,11 +24,21 @@ HASHNODE_PUBLICATION_ID=your-publication-id
 - API Key: Hashnode → Account Settings → Developer → Generate new token
 - Publication ID: Dashboard URL → `hashnode.com/{PUBLICATION_ID}/dashboard`
 
-### 3. Publish a Post
+### 3. Create a Draft
 
 ```bash
 cd scripts/
-node publish-draft.js /path/to/your-article.md
+node create-draft.js /path/to/your-article.md
+```
+
+### 4. Publish the Draft
+
+```bash
+# List all drafts
+node publish-existing-draft.js
+
+# Publish by slug or draft ID
+node publish-existing-draft.js your-article-slug
 ```
 
 ## Directory Structure
@@ -42,8 +52,9 @@ hashnode/
 ├── scripts/
 │   ├── package.json
 │   ├── hashnode-client.js       # Core GraphQL API client
-│   ├── publish-post.js          # Publishing logic
-│   └── publish-draft.js         # CLI wrapper (main entry point)
+│   ├── publish-post.js          # Main draft creation logic
+│   ├── create-draft.js          # CLI wrapper: create draft from markdown
+│   └── publish-existing-draft.js # CLI wrapper: publish an existing draft
 └── references/
     ├── api-reference.md         # Full GraphQL API docs
     ├── tag-ids.md               # Common Hashnode tag IDs
@@ -62,7 +73,6 @@ brief: Short SEO description (recommended)
 coverImage: https://cdn.example.com/cover.png
 tags: nodejs,typescript,fintech
 canonical: https://yoursite.com/original-post
-publish: true
 ---
 
 ## Your Content Here
@@ -94,8 +104,9 @@ When the OpenClaw agent needs to publish to Hashnode:
 ```javascript
 // The agent will automatically:
 // 1. Read the SKILL.md file
-// 2. Execute the publish-draft.js script
-// 3. Report the published URL back to the user
+// 2. Execute create-draft.js to create a draft from the markdown file
+// 3. Execute publish-existing-draft.js (with user confirmation) to publish
+// 4. Report the published URL back to the user
 ```
 
 ## Programmatic Usage
@@ -104,18 +115,23 @@ Import and use directly in Node.js:
 
 ```javascript
 import { publishToHashnode } from './scripts/publish-post.js';
+import { publishDraft } from './scripts/hashnode-client.js';
 
-const result = await publishToHashnode({
+// Step 1: Create draft
+const draft = await publishToHashnode({
   title: 'My Article',
   contentMarkdown: '## Introduction\n\nYour content here...',
   brief: 'Article description',
   tags: [
     { id: '56744723958ef13879b951ef', slug: 'nodejs', name: 'Node.js' }
   ],
-  publish: true
 });
 
-console.log(`Published: ${result.url}`);
+console.log(`Draft created: ${draft.id} (${draft.slug})`);
+
+// Step 2: Publish explicitly
+const post = await publishDraft(draft.id);
+console.log(`Published: ${post.url}`);
 ```
 
 ## Testing
@@ -123,10 +139,14 @@ console.log(`Published: ${result.url}`);
 Test without publishing (creates draft only):
 
 ```bash
-node publish-draft.js test-article.md
+node create-draft.js ../test-article.md
 ```
 
-This creates a draft on Hashnode but doesn't publish it. Check your drafts dashboard to verify.
+This creates a draft on Hashnode but does not publish it. Check your drafts dashboard to verify. To then publish it:
+
+```bash
+node publish-existing-draft.js test-article-openclaw-hashnode-integration
+```
 
 ## Documentation
 

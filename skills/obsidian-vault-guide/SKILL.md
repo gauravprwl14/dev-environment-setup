@@ -10,7 +10,7 @@ This skill provides vault conventions for other skills that write to the Obsidia
 
 ## Vault Location
 
-`$OBSIDIAN_VAULT_PATH` → default: `/home/ubuntu/home/project/gp/obsidian-vault/Ved/`
+`$OBSIDIAN_VAULT_PATH` → default: `/home/ubuntu/Sites/projects/gp/obsidian-vault/Ved/`
 
 ## Vault Structure
 

@@ -17,38 +17,87 @@ Check `$ARGUMENTS`:
 
 ## Configuration
 
-Load environment:
+### Vault Path Resolution
+
+Resolve the vault path using this priority order:
+
+1. If the environment variable `OBSIDIAN_VAULT_PATH` is set → use it.
+2. Otherwise fall back to the default: `/home/ubuntu/Sites/projects/gp/obsidian-vault/Ved`.
+
+After resolving, verify the directory exists:
 ```bash
-# Load config (env var > shared .env > per-skill .env > defaults)
-for dir in \
-  "$(dirname "${SKILL_ROOT:-.}")" \
-  "${CLAUDE_PLUGIN_ROOT:+${CLAUDE_PLUGIN_ROOT}/..}" \
-  "$HOME/.claude/skills" \
-  "$HOME/.openclaw/workspace/skills"; do
-  [ -n "$dir" ] && [ -f "$dir/lib/config.sh" ] && source "$dir/lib/config.sh" && break
-done 2>/dev/null
-load_pipeline_config "obsidian-note" 2>/dev/null || source ~/.config/content-pipeline/.env 2>/dev/null
+VAULT_PATH="${OBSIDIAN_VAULT_PATH:-/home/ubuntu/Sites/projects/gp/obsidian-vault/Ved}"
+
+if [ ! -d "$VAULT_PATH" ]; then
+  echo "Error: Vault directory not found. Set OBSIDIAN_VAULT_PATH env var or create directory at /home/ubuntu/Sites/projects/gp/obsidian-vault/Ved"
+  # STOP execution here — do not proceed
+fi
 ```
 
-- Vault path: `$OBSIDIAN_VAULT_PATH` (default: `/home/ubuntu/home/project/gp/obsidian-vault/Ved`)
+If the vault directory is not found, output the error above and STOP. Do not attempt to create the note.
+
 - Target folder: `content/yt-content/`
 
-## BLOCKING REQUIREMENT
+## BLOCKING REQUIREMENT — Vault Conventions
 
-Before creating the note, read the Obsidian Vault Guide for vault conventions:
+Before creating any note, load vault conventions by reading the `obsidian-vault-guide` skill. It is located at the same directory level as this skill:
+
 ```
-Read: ~/.openclaw/workspace/OBSIDIAN_VAULT_GUIDE.md
+Read: <skills-root>/obsidian-vault-guide/SKILL.md
 ```
 
-Also check if the obsidian-vault-guide skill has reference content loaded in this session.
+Where `<skills-root>` is the parent directory of this skill's directory. For example, if this skill is at `skills/obsidian-note/SKILL.md`, read `skills/obsidian-vault-guide/SKILL.md`.
+
+Do NOT read any hardcoded machine-specific paths such as `~/.openclaw/` or any path outside the project repository. The vault guide is always co-located with this skill inside the skills directory.
 
 ## Task Execution
 
-1. **Read the summary** at the path provided in `$ARGUMENTS`.
+### Step 1 — Validate input file
 
-2. **Extract metadata** from summary frontmatter (title, channel, URL, themes).
+Check that the file path provided in `$ARGUMENTS` exists before reading it:
+```bash
+INPUT_FILE="$ARGUMENTS"
 
-3. **Generate Obsidian note** with these conventions:
+if [ ! -f "$INPUT_FILE" ]; then
+  echo "Error: Input file not found: $INPUT_FILE"
+  # STOP execution here
+fi
+```
+
+If the file does not exist, output the error above and STOP.
+
+### Step 2 — Read the summary
+
+Read the file at the path provided in `$ARGUMENTS`.
+
+### Step 3 — Extract metadata
+
+Extract from summary frontmatter: title, channel, URL, themes, duration.
+
+### Step 4 — Determine output file path
+
+- File name: `<YYYY-MM-DD>-<slug>.md` (slug from title: lowercase, spaces replaced with hyphens, special characters removed)
+- Full path: `$VAULT_PATH/content/yt-content/<filename>`
+
+### Step 5 — Check for existing file (overwrite guard)
+
+Before writing, check if the output file already exists:
+```bash
+OUTPUT_FILE="$VAULT_PATH/content/yt-content/<filename>"
+
+if [ -f "$OUTPUT_FILE" ]; then
+  echo "Warning: A note already exists at $OUTPUT_FILE"
+  echo "Overwrite? (yes/no)"
+  # Wait for user confirmation before proceeding
+  # If user says no → STOP
+fi
+```
+
+If the file exists, warn the user and ask for confirmation. Do not overwrite without explicit confirmation.
+
+### Step 6 — Generate Obsidian note
+
+Create the note using these conventions (loaded from obsidian-vault-guide):
 
 ```markdown
 ---
@@ -92,35 +141,65 @@ related: []
 
 ## Connections
 - Related to: [[<existing note>]], [[<concept>]]
-- See also: [[<MOC or related note>]]
+- See also: [[YouTube Content MOC]]
 
 ## Raw Notes
 [Any additional details worth preserving]
 ```
 
-4. **Save to vault**:
-   - File name: `<YYYY-MM-DD>-<slug>.md` (slug from title, lowercase, hyphens)
-   - Path: `$OBSIDIAN_VAULT_PATH/content/yt-content/<filename>`
-   - Create the directory if it doesn't exist
+### Step 7 — Save to vault
 
-5. **Update YouTube Content MOC**:
-   - Check if `$OBSIDIAN_VAULT_PATH/content/yt-content/YouTube-Content-MOC.md` exists
-   - If yes: append a link to the new note under the appropriate section
-   - If no: create it with a header and the first link
+- Create the directory `$VAULT_PATH/content/yt-content/` if it doesn't exist.
+- Write the generated note to `$VAULT_PATH/content/yt-content/<filename>`.
 
-6. **Report results**:
+### Step 8 — Update YouTube Content MOC
+
+Check for the MOC file at `$VAULT_PATH/content/yt-content/YouTube-Content-MOC.md`:
+
+**If the MOC file exists:**
+- Read the existing file.
+- Append a wikilink entry for the new note under the `## Recent` section using this format:
+  ```
+  - [[<filename-without-extension>]] — <brief one-line description>
+  ```
+- Write the updated content back to the MOC file.
+
+**If the MOC file does not exist:**
+- Create it with the following structure, inserting the new note as the first entry:
+
+```markdown
+---
+title: YouTube Content MOC
+tags: [moc, youtube, content]
+type: moc
+---
+
+# YouTube Content MOC
+
+## Recent
+- [[<filename-without-extension>]] — <brief one-line description>
+
+## By Topic
+<!-- Add topic sections as the collection grows -->
 ```
-✅ Obsidian note created: <title>
-📁 Saved to: <vault-path>/content/yt-content/<filename>
-🔗 Wikilinks: <N> created
-📋 MOC updated: YouTube-Content-MOC.md
+
+### Step 9 — Report results
+
+```
+Note created: <title>
+Saved to: <vault-path>/content/yt-content/<filename>
+Wikilinks: <N> created
+MOC updated: YouTube-Content-MOC.md
 
 Next: Open Obsidian to review, or run `/content-ideas <path>/summary.md`
 ```
 
-## Obsidian Rules (from vault guide)
+## Obsidian Rules (from obsidian-vault-guide)
+
 - ALWAYS use `[[Wikilink]]` syntax for internal references
 - Use `> [!callout-type]` for callouts (tip, info, quote, warning)
 - Include YAML frontmatter with tags, type, related
 - Dense linking: every concept that could be its own note gets a wikilink
 - If a referenced note doesn't exist, link it anyway (Obsidian handles forward references)
+- Every note MUST link to at least 2 other notes
+- Tag notes for discoverability (#youtube, #content, #topic-name)
