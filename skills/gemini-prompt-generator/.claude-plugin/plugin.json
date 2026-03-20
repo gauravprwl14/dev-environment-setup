@@ -1,0 +1,6 @@
+{
+  "name": "gemini-prompt-generator",
+  "description": "Generate 3 Gemini-optimised image prompt variants per content idea. Reads ideas.md, writes prompts.md. No API key required.",
+  "version": "1.0.0",
+  "user-invocable": true
+}
