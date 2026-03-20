@@ -1,0 +1,14 @@
+# Content Pipeline — Python Dependencies
+# Install all: pip install -r requirements.txt
+#
+# Or install per-skill:
+#   yt-transcript:    pip install youtube-transcript-api yt-dlp
+#   image-generator:  pip install "google-genai>=1.0.0" "Pillow>=10.0.0"
+
+# ── yt-transcript ─────────────────────────────────────────────
+youtube-transcript-api>=1.2.4
+yt-dlp
+
+# ── image-generator ───────────────────────────────────────────
+google-genai>=1.0.0
+Pillow>=10.0.0

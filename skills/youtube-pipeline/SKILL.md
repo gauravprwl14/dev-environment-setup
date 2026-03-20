@@ -76,7 +76,7 @@ Output: <output directory>
 Before running this step, check whether the Obsidian vault is reachable:
 
 ```bash
-VAULT_PATH="${OBSIDIAN_VAULT_PATH:-/home/ubuntu/Sites/projects/gp/obsidian-vault/Ved}"
+VAULT_PATH="${OBSIDIAN_VAULT_PATH:-$HOME/obsidian}"
 if [ ! -d "$VAULT_PATH" ]; then
   echo "Warning: Obsidian vault not found at $VAULT_PATH. Skipping obsidian-note step. Set OBSIDIAN_VAULT_PATH to enable."
   # Mark step as skipped and continue — do not stop the pipeline

@@ -22,14 +22,14 @@ Check `$ARGUMENTS`:
 Resolve the vault path using this priority order:
 
 1. If the environment variable `OBSIDIAN_VAULT_PATH` is set → use it.
-2. Otherwise fall back to the default: `/home/ubuntu/Sites/projects/gp/obsidian-vault/Ved`.
+2. Otherwise fall back to the default: `~/obsidian`.
 
 After resolving, verify the directory exists:
 ```bash
-VAULT_PATH="${OBSIDIAN_VAULT_PATH:-/home/ubuntu/Sites/projects/gp/obsidian-vault/Ved}"
+VAULT_PATH="${OBSIDIAN_VAULT_PATH:-$HOME/obsidian}"
 
 if [ ! -d "$VAULT_PATH" ]; then
-  echo "Error: Vault directory not found. Set OBSIDIAN_VAULT_PATH env var or create directory at /home/ubuntu/Sites/projects/gp/obsidian-vault/Ved"
+  echo "Error: Vault not found at $VAULT_PATH. Set OBSIDIAN_VAULT_PATH in ~/.config/content-pipeline/.env"
   # STOP execution here — do not proceed
 fi
 ```
