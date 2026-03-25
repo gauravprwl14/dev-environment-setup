@@ -1,0 +1,10 @@
+{
+  "name": "yt-transcript",
+  "description": "Extract transcript from any YouTube video URL",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["youtube", "transcript", "video"],
+  "skills": ["./"]
+}

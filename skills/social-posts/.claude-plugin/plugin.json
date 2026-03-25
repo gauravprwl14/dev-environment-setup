@@ -1,0 +1,10 @@
+{
+  "name": "social-posts",
+  "description": "Generate platform-ready social media posts (X and LinkedIn) with paired images from content ideas",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["social-media", "x", "linkedin", "posts"],
+  "skills": ["./"]
+}

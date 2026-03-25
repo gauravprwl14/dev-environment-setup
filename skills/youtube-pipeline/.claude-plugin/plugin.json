@@ -1,0 +1,10 @@
+{
+  "name": "youtube-pipeline",
+  "description": "Full YouTube content pipeline orchestrator — chains transcript, summary, ideas, images, and posts",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["youtube", "pipeline", "content", "orchestrator"],
+  "skills": ["./"]
+}

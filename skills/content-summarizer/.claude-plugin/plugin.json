@@ -1,0 +1,10 @@
+{
+  "name": "content-summarizer",
+  "description": "Generate a structured summary from a YouTube transcript or any long-form content",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["summary", "content", "youtube", "transcript"],
+  "skills": ["./"]
+}

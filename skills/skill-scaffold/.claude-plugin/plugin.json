@@ -1,0 +1,9 @@
+{
+  "name": "skill-scaffold",
+  "description": "Generate a new Claude Code skill directory with SKILL.md, plugin.json, and optional scripts/",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "skills": ["./"]
+}

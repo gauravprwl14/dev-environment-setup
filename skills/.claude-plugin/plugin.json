@@ -1,0 +1,27 @@
+{
+  "name": "content-pipeline",
+  "description": "Unified content pipeline — accepts YouTube URL or written notes and produces blog, carousel, social posts, tweet threads, and more",
+  "version": "2.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["youtube", "content", "pipeline", "social-media", "obsidian", "blog", "carousel"],
+  "skills": [
+    "./yt-transcript",
+    "./content-summarizer",
+    "./obsidian-note",
+    "./obsidian-vault-guide",
+    "./content-ideas",
+    "./gemini-prompt-generator",
+    "./image-generator",
+    "./social-posts",
+    "./tweet-generator",
+    "./youtube-pipeline",
+    "./skill-scaffold",
+    "./text-ingestion",
+    "./blog-generator",
+    "./carousel-generator",
+    "./instagram-caption",
+    "./content-pipeline"
+  ]
+}

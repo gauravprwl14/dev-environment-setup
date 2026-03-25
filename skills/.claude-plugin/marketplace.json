@@ -1,0 +1,17 @@
+{
+  "name": "youtube-content-pipeline",
+  "owner": { "name": "gp", "url": "https://github.com/gp" },
+  "metadata": { "description": "Multi-agent YouTube content pipeline — transcript, summary, ideas, images, social posts" },
+  "plugins": [
+    { "name": "yt-transcript", "source": "./yt-transcript" },
+    { "name": "content-summarizer", "source": "./content-summarizer" },
+    { "name": "obsidian-note", "source": "./obsidian-note" },
+    { "name": "obsidian-vault-guide", "source": "./obsidian-vault-guide" },
+    { "name": "content-ideas", "source": "./content-ideas" },
+    { "name": "image-generator", "source": "./image-generator" },
+    { "name": "social-posts", "source": "./social-posts" },
+    { "name": "tweet-generator", "source": "./tweet-generator" },
+    { "name": "youtube-pipeline", "source": "./youtube-pipeline" },
+    { "name": "skill-scaffold", "source": "./skill-scaffold" }
+  ]
+}

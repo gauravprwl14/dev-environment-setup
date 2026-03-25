@@ -1,0 +1,10 @@
+{
+  "name": "image-generator",
+  "description": "Generate marketing-ready images using Google Gemini API with platform-specific sizes",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "keywords": ["image", "gemini", "ai", "marketing"],
+  "skills": ["./"]
+}

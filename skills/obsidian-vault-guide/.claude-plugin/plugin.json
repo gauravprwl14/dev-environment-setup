@@ -1,0 +1,9 @@
+{
+  "name": "obsidian-vault-guide",
+  "description": "Background knowledge skill encoding Obsidian vault conventions. Not user-invocable.",
+  "version": "1.0.0",
+  "author": { "name": "gp" },
+  "repository": "https://github.com/gp/dev-environment-setup",
+  "license": "MIT",
+  "skills": ["./"]
+}
