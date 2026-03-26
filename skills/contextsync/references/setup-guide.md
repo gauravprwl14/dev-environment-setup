@@ -11,6 +11,11 @@ project root — halt and inform the user.
 ## 1. When to Run Setup
 
 Run setup in these situations:
+
+> **Prerequisite**: CLAUDE.md must exist at the project root. If it does not, halt
+> immediately and inform the user: "CLAUDE.md not found. Create CLAUDE.md at the project
+> root before running setup." Do not proceed without it.
+
 - First time adopting contextsync on a project (no `## Context Navigation` in CLAUDE.md yet)
 - After adding a new app to a monorepo (new app needs its own docs scaffold)
 - After `## Context Navigation` was manually removed from CLAUDE.md
