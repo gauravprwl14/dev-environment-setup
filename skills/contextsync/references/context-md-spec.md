@@ -65,22 +65,22 @@ navigating to this file answer?]
 
 ## Templates by Layer
 
-### Root /CONTEXT.md (project router)
+### Root `docs/CONTEXT.md` (domain router — Layer 1 entry point)
 
 ```markdown
-# {Your Project Name} — CONTEXT.md
+# {Your Project Name} — docs/CONTEXT.md
 
 ## Purpose
-Project-level router for the {project name} codebase. Maps developer questions to the
-correct docs/ subdomain or feature guide.
+Domain router for the {project name} documentation. Maps developer questions to the
+correct docs/ subdomain. Entry point declared in CLAUDE.md's ## Context Navigation section.
 
 ## Files
 | File / Directory | Purpose |
 |---|---|
-| `docs/features/` | Feature guides — one per feature, covers flow, code, errors, config |
-| `docs/engineering/` | Architecture, module structure, conventions, open issues |
-| `docs/infrastructure/` | Deployment, cloud config, environment setup |
-| `docs/agents/` | Agent definitions for multi-agent workflows |
+| `features/` | Feature guides — one per feature, covers flow, code, errors, config |
+| `engineering/` | Architecture, module structure, conventions, open issues |
+| `infrastructure/` | Deployment, cloud config, environment setup |
+| `agents/` | Agent definitions for multi-agent workflows |
 
 ## When to Use
 - Starting a new task and need to orient to the codebase
@@ -88,6 +88,9 @@ correct docs/ subdomain or feature guide.
 - Searching for engineering or infrastructure documentation
 - Locating the agent definition for a specific role
 ```
+
+> **Note**: Paths in the Files table are relative to `docs/`. Example: `features/` resolves
+> to `docs/features/CONTEXT.md`.
 
 ---
 
