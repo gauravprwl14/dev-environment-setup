@@ -74,7 +74,7 @@ Incoming task
 ├─ "setup" / "initialize docs" / "contextsync setup"
 │    └─ LOAD references/setup-guide.md → RUN setup procedure
 │
-├─ ## Context Navigation missing from CLAUDE.md AND task is not "setup"
+├─ ## Context Navigation missing from CLAUDE.md AND task is not a setup task
 │    └─ WARN: "No '## Context Navigation' found in CLAUDE.md. Run contextsync setup."
 │         → HALT. Do not proceed.
 │
@@ -201,7 +201,7 @@ Quick reference — common agent interaction patterns:
 ## Hard Stops — treat as blockers, never proceed past these
 
 1. **Modifying CLAUDE.md** — Layer 1 is read-only. The only permitted write is the
-   `## Context Navigation` block added by `contextsync setup`. All other changes require
+   `## Context Navigation` block added or updated by `contextsync setup`. All other changes require
    explicit human approval.
 2. **Undocumented error code** — Never ship a feature guide with an error/exception code not verified in project source.
 3. **CONTEXT.md content creep** — Routing tables route. If you find yourself writing explanations in a CONTEXT.md, stop and move that content to a dedicated file.
