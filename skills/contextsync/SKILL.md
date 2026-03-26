@@ -20,15 +20,39 @@ question has exactly one canonical answer. Every routing table is always current
 
 ## Navigation Protocol — MANDATORY, always run first
 
-**The 3-layer chain. Never skip a level. Never read a content file without first reading
-its parent CONTEXT.md.**
+### Step 0: Bootstrap — find the entry point
+
+Read CLAUDE.md and find the `## Context Navigation` section before doing anything else.
 
 ```
-CLAUDE.md                                ← Layer 1: coding rules, conventions (READ ONLY)
-  └── /CONTEXT.md                        ← Layer 2: project router
-        └── {domain}/CONTEXT.md          ← Layer 2: domain router
-              └── {subdomain}/CONTEXT.md ← Layer 2: file router (if needed)
-                    └── target file      ← Layer 3: content
+## Context Navigation present?
+│
+├─ NO (section absent) AND task is not "setup"
+│    → Warn: "No '## Context Navigation' found in CLAUDE.md. Run contextsync setup."
+│    → HALT. Do not proceed.
+│
+├─ Single entry — one path, no label (e.g. "docs/CONTEXT.md")
+│    → Use that path as the Layer 1 entry point.
+│
+└─ Multiple labeled entries (e.g. "web: apps/web/docs/CONTEXT.md")
+     → Derive app root per entry: strip "/docs/CONTEXT.md" suffix.
+       Example: "apps/web/docs/CONTEXT.md" → app root "apps/web"
+     → Match task context against app roots and label names:
+         a. File paths in task start with an app root → use that entry point.
+         b. App label name mentioned in task → use that entry point.
+         c. No clear signal → ask once: "Which app? [label1 | label2 | ...]"
+            (show actual label names from ## Context Navigation)
+```
+
+### Step 1: Follow the 3-layer chain
+
+**Never skip a level. Never read a content file without first reading its parent CONTEXT.md.**
+
+```
+{entry point}                              ← Layer 1: domain router (from ## Context Navigation)
+  └── {entry-point-dir}/{domain}/CONTEXT.md ← Layer 2: domain router
+        └── {subdomain}/CONTEXT.md          ← Layer 2: file router (if needed)
+              └── target file               ← Layer 3: content
 ```
 
 **Exception handling:**
