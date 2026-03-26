@@ -113,14 +113,14 @@ project-root/
 > examples. Use the domains that match your project. Define them in `CLAUDE.md`'s
 > `## Context Navigation` section during `contextsync setup`.
 
-## Layer 3 Naming Conventions
+### Layer 3 Naming Conventions
 
 | Domain | Naming convention | Example |
 |---|---|---|
 | `features/` | `FEAT-{kebab-case}.md` prefix (required) | `FEAT-order-fulfillment.md` |
 | All other domains | Plain descriptive names (no prefix) | `architecture-overview.md` |
 
-## Scaling: When Layer 2 Approaches 100 Lines
+### Scaling — When Layer 2 Approaches 100 Lines
 
 When `docs/features/CONTEXT.md` fills up, split by sub-domain:
 
