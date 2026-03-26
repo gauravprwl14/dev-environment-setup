@@ -71,6 +71,13 @@ Read CLAUDE.md and find the `## Context Navigation` section before doing anythin
 ```
 Incoming task
 │
+├─ "setup" / "initialize docs" / "contextsync setup"
+│    └─ LOAD references/setup-guide.md → RUN setup procedure
+│
+├─ ## Context Navigation missing from CLAUDE.md AND task is not "setup"
+│    └─ WARN: "No '## Context Navigation' found in CLAUDE.md. Run contextsync setup."
+│         → HALT. Do not proceed.
+│
 ├─ new feature / new endpoint / new module
 │    └─ CREATE feature guide + UPDATE parent CONTEXT.md routing
 │
@@ -111,7 +118,7 @@ escalate as a blocker.
 
 > **Project configuration required**: G3 and G4 source paths are project-specific.
 > Before running any task, confirm the error source location and config source location
-> for this project from CLAUDE.md or `/CONTEXT.md`. Never assume paths.
+> for this project from CLAUDE.md or `docs/CONTEXT.md`. Never assume paths.
 
 ---
 
@@ -168,6 +175,7 @@ unless operating in autonomous/headless mode.
 | `references/3-layer-system.md` | Orienting to a new domain, auditing overall structure, explaining the system to another agent |
 | `references/feature-guide-spec.md` | Writing or reviewing any feature guide — contains required section template and worked example |
 | `references/context-md-spec.md` | Creating, updating, or auditing any CONTEXT.md file — contains templates, size rules, stub pattern |
+| `references/setup-guide.md` | Running `contextsync setup` — contains the full interactive setup procedure, domain naming guidance, and monorepo walkthrough |
 | `references/agent-handoffs.md` | Receiving tasks from or returning results to another agent in a multi-agent workflow |
 | `agents/doc-auditor.md` | Running a full documentation audit across the docs tree |
 
@@ -192,7 +200,9 @@ Quick reference — common agent interaction patterns:
 
 ## Hard Stops — treat as blockers, never proceed past these
 
-1. **Modifying CLAUDE.md** — Layer 1 is read-only. Changes require explicit human approval.
+1. **Modifying CLAUDE.md** — Layer 1 is read-only. The only permitted write is the
+   `## Context Navigation` block added by `contextsync setup`. All other changes require
+   explicit human approval.
 2. **Undocumented error code** — Never ship a feature guide with an error/exception code not verified in project source.
 3. **CONTEXT.md content creep** — Routing tables route. If you find yourself writing explanations in a CONTEXT.md, stop and move that content to a dedicated file.
 4. **Deleting documentation** — Update or extend only. Deletion requires explicit instruction + reason.
