@@ -27,7 +27,7 @@ Read CLAUDE.md and find the `## Context Navigation` section before doing anythin
 ```
 ## Context Navigation present?
 │
-├─ NO (section absent) AND task is not "setup"
+├─ NO (section absent) AND task is not "setup" (see Task Decision Tree — first branch)
 │    → Warn: "No '## Context Navigation' found in CLAUDE.md. Run contextsync setup."
 │    → HALT. Do not proceed.
 │
