@@ -1,0 +1,17 @@
+{
+  "name": "acp-complete-integration",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Complete ACP system integration example",
+  "main": "complete-system.js",
+  "scripts": {
+    "start": "node complete-system.js",
+    "start:real": "node real-sdk-example.js"
+  },
+  "keywords": ["acp", "complete", "integration"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^0.16.1"
+  }
+}

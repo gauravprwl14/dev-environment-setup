@@ -1,0 +1,17 @@
+{
+  "name": "acp-example-01-simple-flow",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Simple ACP message flow demonstration",
+  "main": "example.js",
+  "scripts": {
+    "start": "node example.js",
+    "start:real": "node example-with-sdk.js"
+  },
+  "keywords": ["acp", "agent", "protocol"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^0.16.1"
+  }
+}
