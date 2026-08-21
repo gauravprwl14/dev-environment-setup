@@ -20,15 +20,39 @@ question has exactly one canonical answer. Every routing table is always current
 
 ## Navigation Protocol — MANDATORY, always run first
 
-**The 3-layer chain. Never skip a level. Never read a content file without first reading
-its parent CONTEXT.md.**
+### Step 0: Bootstrap — find the entry point
+
+Read CLAUDE.md and find the `## Context Navigation` section before doing anything else.
 
 ```
-CLAUDE.md                                ← Layer 1: coding rules, conventions (READ ONLY)
-  └── /CONTEXT.md                        ← Layer 2: project router
-        └── {domain}/CONTEXT.md          ← Layer 2: domain router
-              └── {subdomain}/CONTEXT.md ← Layer 2: file router (if needed)
-                    └── target file      ← Layer 3: content
+## Context Navigation present?
+│
+├─ NO (section absent) AND task is not "setup" (see Task Decision Tree — first branch)
+│    → Warn: "No '## Context Navigation' found in CLAUDE.md. Run contextsync setup."
+│    → HALT. Do not proceed.
+│
+├─ Single entry — one path, no label (e.g. "docs/CONTEXT.md")
+│    → Use that path as the Layer 1 entry point.
+│
+└─ Multiple labeled entries (e.g. "web: apps/web/docs/CONTEXT.md")
+     → Derive app root per entry: strip "/docs/CONTEXT.md" suffix.
+       Example: "apps/web/docs/CONTEXT.md" → app root "apps/web"
+     → Match task context against app roots and label names:
+         a. File paths in task start with an app root → use that entry point.
+         b. App label name mentioned in task → use that entry point.
+         c. No clear signal → ask once: "Which app? [label1 | label2 | ...]"
+            (show actual label names from ## Context Navigation)
+```
+
+### Step 1: Follow the 3-layer chain
+
+**Never skip a level. Never read a content file without first reading its parent CONTEXT.md.**
+
+```
+{entry point}                              ← Layer 1: domain router (from ## Context Navigation)
+  └── {entry-point-dir}/{domain}/CONTEXT.md ← Layer 2: domain router
+        └── {subdomain}/CONTEXT.md          ← Layer 2: file router (if needed)
+              └── target file               ← Layer 3: content
 ```
 
 **Exception handling:**
@@ -46,6 +70,13 @@ CLAUDE.md                                ← Layer 1: coding rules, conventions 
 
 ```
 Incoming task
+│
+├─ "setup" / "initialize docs" / "contextsync setup"
+│    └─ LOAD references/setup-guide.md → RUN setup procedure
+│
+├─ ## Context Navigation missing from CLAUDE.md AND task is not a setup task
+│    └─ WARN: "No '## Context Navigation' found in CLAUDE.md. Run contextsync setup."
+│         → HALT. Do not proceed.
 │
 ├─ new feature / new endpoint / new module
 │    └─ CREATE feature guide + UPDATE parent CONTEXT.md routing
@@ -87,7 +118,7 @@ escalate as a blocker.
 
 > **Project configuration required**: G3 and G4 source paths are project-specific.
 > Before running any task, confirm the error source location and config source location
-> for this project from CLAUDE.md or `/CONTEXT.md`. Never assume paths.
+> for this project from CLAUDE.md or `docs/CONTEXT.md`. Never assume paths.
 
 ---
 
@@ -144,6 +175,7 @@ unless operating in autonomous/headless mode.
 | `references/3-layer-system.md` | Orienting to a new domain, auditing overall structure, explaining the system to another agent |
 | `references/feature-guide-spec.md` | Writing or reviewing any feature guide — contains required section template and worked example |
 | `references/context-md-spec.md` | Creating, updating, or auditing any CONTEXT.md file — contains templates, size rules, stub pattern |
+| `references/setup-guide.md` | Running `contextsync setup` — contains the full interactive setup procedure, domain naming guidance, and monorepo walkthrough |
 | `references/agent-handoffs.md` | Receiving tasks from or returning results to another agent in a multi-agent workflow |
 | `agents/doc-auditor.md` | Running a full documentation audit across the docs tree |
 
@@ -168,7 +200,9 @@ Quick reference — common agent interaction patterns:
 
 ## Hard Stops — treat as blockers, never proceed past these
 
-1. **Modifying CLAUDE.md** — Layer 1 is read-only. Changes require explicit human approval.
+1. **Modifying CLAUDE.md** — Layer 1 is read-only. The only permitted write is the
+   `## Context Navigation` block added or updated by `contextsync setup`. All other changes require
+   explicit human approval.
 2. **Undocumented error code** — Never ship a feature guide with an error/exception code not verified in project source.
 3. **CONTEXT.md content creep** — Routing tables route. If you find yourself writing explanations in a CONTEXT.md, stop and move that content to a dedicated file.
 4. **Deleting documentation** — Update or extend only. Deletion requires explicit instruction + reason.

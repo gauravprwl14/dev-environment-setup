@@ -1,0 +1,16 @@
+{
+  "name": "acp-example-02-channel-binding",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Channel and thread binding demonstration",
+  "main": "example.js",
+  "scripts": {
+    "start": "node example.js"
+  },
+  "keywords": ["acp", "binding", "routing"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^0.16.1"
+  }
+}

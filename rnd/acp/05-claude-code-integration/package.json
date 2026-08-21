@@ -1,0 +1,18 @@
+{
+  "name": "claude-code-acp-integration",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Real Claude Code integration using @agentclientprotocol/sdk",
+  "main": "claude-code-real.js",
+  "scripts": {
+    "start": "node claude-code-real.js",
+    "test": "node test-connection.js",
+    "chat": "node interactive-chat.js"
+  },
+  "dependencies": {
+    "@agentclientprotocol/sdk": "^0.16.1"
+  },
+  "keywords": ["acp", "claude", "anthropic", "agent", "sdk"],
+  "author": "",
+  "license": "MIT"
+}

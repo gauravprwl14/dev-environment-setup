@@ -10,33 +10,33 @@ another agent.
 
 ## Layer Definitions
 
-### Layer 1 — Root Configuration (READ ONLY)
+### Layer 1 — Entry Point (READ ONLY)
 
 ```
-CLAUDE.md          ← Coding rules, mandatory patterns, conventions
-                      NEVER modify directly. Changes require human approval.
+CLAUDE.md              ← Coding rules, conventions, ## Context Navigation bridge.
+                          NEVER modify directly. Changes require human approval.
 
-/CONTEXT.md        ← Project-level router. Maps developer questions to the
-                      correct docs/ subfolder. Under 100 lines always.
+docs/CONTEXT.md        ← Layer 1: domain router. The entry point declared in
+                          CLAUDE.md's ## Context Navigation section. ≤ 100 lines.
 ```
 
-**Rule**: CLAUDE.md is infrastructure config. Treat it like production environment variables —
-you can read it, you can reference it, you cannot edit it without explicit sign-off.
+**Rule**: CLAUDE.md is infrastructure config — read it, reference it, never edit it without
+explicit sign-off. The `## Context Navigation` section in CLAUDE.md tells the agent which
+`docs/CONTEXT.md` path to use as the Layer 1 entry point.
 
 ---
 
 ### Layer 2 — Routing Tables
 
 ```
-/CONTEXT.md
-  └── docs/CONTEXT.md                        ← maps topics → docs subfolder
-        ├── docs/features/CONTEXT.md          ← maps questions → feature guides
-        ├── docs/engineering/CONTEXT.md       ← maps questions → engineering docs
-        ├── docs/infrastructure/CONTEXT.md    ← maps questions → infra docs
-        └── docs/agents/CONTEXT.md            ← maps agent types → agent folders
-              ├── docs/agents/backend/CONTEXT.md
-              ├── docs/agents/frontend/CONTEXT.md
-              └── docs/agents/shared/CONTEXT.md
+docs/CONTEXT.md                             ← Layer 1: maps topics → domain subfolder
+  ├── docs/features/CONTEXT.md              ← Layer 2: maps questions → feature guides
+  ├── docs/engineering/CONTEXT.md           ← Layer 2: maps questions → engineering docs
+  ├── docs/infrastructure/CONTEXT.md        ← Layer 2: maps questions → infra docs
+  └── docs/agents/CONTEXT.md               ← Layer 2: maps agent types → agent folders
+        ├── docs/agents/backend/CONTEXT.md
+        ├── docs/agents/frontend/CONTEXT.md
+        └── docs/agents/shared/CONTEXT.md
 ```
 
 **Rules for every CONTEXT.md:**
@@ -75,11 +75,10 @@ docs/agents/{type}/
 
 ```
 project-root/
-├── CLAUDE.md                               ← L1: rules
-├── CONTEXT.md                              ← L2: project router
+├── CLAUDE.md                               ← L1: rules + ## Context Navigation bridge
 │
 └── docs/
-    ├── CONTEXT.md                          ← L2: domain router
+    ├── CONTEXT.md                          ← L1: domain router (entry point)
     │
     ├── features/
     │   ├── CONTEXT.md                      ← L2: feature router
@@ -110,9 +109,35 @@ project-root/
             └── frontend-lead.md            ← L3: agent definition
 ```
 
-> **Adapt to your project**: The domain names above (`features/`, `engineering/`,
-> `infrastructure/`) are examples. Use the domains that match your actual project structure.
-> Define them in your root `/CONTEXT.md`.
+> **Adapt to your project**: Domain names (`features/`, `engineering/`, `infrastructure/`) are
+> examples. Use the domains that match your project. Define them in `CLAUDE.md`'s
+> `## Context Navigation` section during `contextsync setup`.
+
+### Layer 3 Naming Conventions
+
+| Domain | Naming convention | Example |
+|---|---|---|
+| `features/` | `FEAT-{kebab-case}.md` prefix (required) | `FEAT-order-fulfillment.md` |
+| All other domains | Plain descriptive names (no prefix) | `architecture-overview.md` |
+
+### Scaling — When Layer 2 Approaches 100 Lines
+
+When `docs/features/CONTEXT.md` fills up, split by sub-domain:
+
+```
+docs/features/
+  CONTEXT.md               ← routes to sub-domains only (not to individual guides)
+  account-management/
+    CONTEXT.md             ← routes to account feature guides
+    FEAT-registration.md
+    FEAT-profile.md
+  payments/
+    CONTEXT.md             ← routes to payment feature guides
+    FEAT-checkout.md
+    FEAT-refunds.md
+```
+
+The 100-line limit drives this decomposition naturally — no upfront planning needed.
 
 ---
 
@@ -121,15 +146,13 @@ project-root/
 **Scenario**: Developer asks "How does user authentication work?"
 
 ```
-Step 1: Read CLAUDE.md           → confirms this is a feature question
-Step 2: Read /CONTEXT.md         → routes to docs/features/
-Step 3: Read docs/CONTEXT.md     → routes to docs/features/CONTEXT.md
-Step 4: Read docs/features/CONTEXT.md
-                                 → routes to FEAT-user-authentication.md
-Step 5: Read FEAT-user-authentication.md  ← answer found
+Step 1: Read CLAUDE.md                   → find ## Context Navigation → entry: docs/CONTEXT.md
+Step 2: Read docs/CONTEXT.md             → routes to docs/features/
+Step 3: Read docs/features/CONTEXT.md    → routes to FEAT-user-authentication.md
+Step 4: Read FEAT-user-authentication.md ← answer found
 ```
 
-**Never**: Jump directly to step 5. The chain exists to prevent reading stale or wrong files.
+**Never**: Jump directly to step 4. The chain exists to prevent reading stale or wrong files.
 
 ---
 
@@ -178,3 +201,12 @@ routing tables so audits don't flag it as an error.
 ### Feature guide for a deprecated feature
 Do not delete. Add a `> ⚠️ DEPRECATED as of [version]` callout at the top. Keep routing
 entry with `[DEPRECATED]` suffix in the purpose column.
+
+---
+
+## Advanced: Source-Mirror Mode (deferred)
+
+Placing CONTEXT.md files inside the source tree (e.g., `src/modules/orders/CONTEXT.md`)
+to mirror the code structure is a future opt-in mode. It is not implemented in the current
+version of this skill. All CONTEXT.md files belong inside `docs/` unless this mode is
+explicitly documented in your project's CLAUDE.md.
