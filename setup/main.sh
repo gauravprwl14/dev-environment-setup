@@ -14,7 +14,9 @@ source "lib/logger.sh"
 
 declare -A PACKAGES=(
     [node]="packages/node.sh"
+    [python3]="packages/python3.sh"
     [yarn]="packages/yarn.sh"
+    [pnpm]="packages/pnpm.sh"
     [docker]="packages/docker.sh"
     [java]="packages/java.sh"
     [flutter]="packages/flutter.sh"
@@ -23,21 +25,33 @@ declare -A PACKAGES=(
     [watchman]="packages/watchman.sh"
     [miniconda]="packages/miniconda.sh"
     [cocoapods]="packages/cocoapods.sh"
+    [cmake]="packages/cmake.sh"
+    [fzf]="packages/fzf.sh"
+    [yt-dlp]="packages/yt-dlp.sh"
     [postgres]="packages/apps/db/postgres.sh"
     [mysql]="packages/apps/db/mysql.sh"
     [mongodb]="packages/apps/db/mongodb.sh"
     [redis]="packages/apps/redis.sh"
     [cursor]="packages/apps/cursor.sh"
+    [android-studio]="packages/apps/android-studio.sh"
     [podman]="packages/apps/podman.sh"
+    [podman-compose]="packages/apps/podman-compose.sh"
+    [podman-desktop]="packages/apps/podman-desktop.sh"
     [postman]="packages/apps/postman.sh"
     [obsidian]="packages/apps/obsidian.sh"
     [figma]="packages/apps/figma.sh"
     [openvpn]="packages/apps/openvpn.sh"
+    [vlc]="packages/apps/vlc.sh"
+    [telegram]="packages/apps/telegram.sh"
+    [discord]="packages/apps/discord.sh"
+    [slack]="packages/apps/slack.sh"
 )
 
 declare -A PACKAGE_DESCS=(
     [node]="Node.js via nvm (cross-platform)"
+    [python3]="Python 3 (with pip/venv where available)"
     [yarn]="Yarn package manager"
+    [pnpm]="pnpm package manager"
     [docker]="Docker (Desktop on macOS, Engine on Linux)"
     [java]="Java JDK via SDKMAN"
     [flutter]="Flutter SDK"
@@ -46,22 +60,32 @@ declare -A PACKAGE_DESCS=(
     [watchman]="Watchman file watcher (Meta)"
     [miniconda]="Miniconda (Python)"
     [cocoapods]="CocoaPods (macOS only)"
+    [cmake]="CMake build system"
+    [fzf]="fzf fuzzy finder (enables enhanced interactive menu)"
+    [yt-dlp]="yt-dlp video/audio downloader (youtube-dl fork)"
     [postgres]="PostgreSQL 17"
     [mysql]="MySQL"
     [mongodb]="MongoDB 8.0"
     [redis]="Redis"
     [cursor]="Cursor IDE"
+    [android-studio]="Android Studio IDE (SDK/emulator provisioning not included)"
     [podman]="Podman container engine"
+    [podman-compose]="Podman Compose (docker-compose alternative)"
+    [podman-desktop]="Podman Desktop GUI app"
     [postman]="Postman API client"
     [obsidian]="Obsidian note-taking app"
     [figma]="Figma design tool"
     [openvpn]="OpenVPN"
+    [vlc]="VLC media player"
+    [telegram]="Telegram Desktop"
+    [discord]="Discord chat app"
+    [slack]="Slack team messaging app"
 )
 
 # Ordered list of package keys for consistent display in menus and tables.
 PACKAGE_KEYS=(
-    node yarn docker java flutter dart fvm watchman miniconda cocoapods
-    postgres mysql mongodb redis cursor podman postman obsidian figma openvpn
+    node python3 yarn pnpm docker java flutter dart fvm watchman miniconda cocoapods cmake fzf yt-dlp
+    postgres mysql mongodb redis cursor android-studio podman podman-compose podman-desktop postman obsidian figma openvpn vlc telegram discord slack
 )
 
 # Runtime state
