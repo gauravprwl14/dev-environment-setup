@@ -25,7 +25,7 @@ is_podman_installed() {
 # Function to check if the Podman machine has been initialized.
 # macOS only — on Linux, Podman runs natively without a VM.
 is_podman_machine_initialized() {
-    if podman machine list --format "{{.Name}}" 2>/dev/null | grep -q "^podman$"; then
+    if podman machine list --format "{{.Name}}" 2>/dev/null | grep -q "^podman-machine-default\*\?$"; then
         log_success "Podman machine is initialized."
         return 0
     else
