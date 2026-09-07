@@ -1,4 +1,13 @@
 #!/bin/bash
+
+# DEPRECATED: superseded by setup/packages/apps/android-studio.sh, which is
+# cross-platform, idempotent, and registered in main.sh's PACKAGES registry
+# (run `./main.sh --install android-studio`). This script is macOS-only,
+# hardcodes a stale Android Studio version/URL, is not idempotent, and is not
+# wired into main.sh. Kept for reference only — see
+# docs/findings/java-android-audit/README.md for details. Safe to delete once
+# the new script has been verified.
+
 source "$(dirname "${BASH_SOURCE[0]}")/../utils/update_zshrc.sh"
 
 # Function to check if a command exists
