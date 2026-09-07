@@ -124,6 +124,13 @@ Options:
 
 ---
 
+## Installation Policy
+
+- **All installs go through a package script.** Never install anything (CLI tool, SDK, GUI app, database) by running `brew`, `apt`, `dnf`, `pacman`, `flatpak`, `snap`, etc. directly in a session. If a package script doesn't exist yet for what's being requested, create it first, then install via `./main.sh --install <name>`.
+- If the user asks to "install X" and no script for X exists under `setup/packages/`, the correct sequence is: write the script → test and verify it (see below) → register it in `main.sh` → then run the install through `main.sh`. Do not shortcut this by calling the package manager ad hoc, even "just this once."
+
+---
+
 ## Adding a New Package
 
 1. Create `setup/packages/<name>.sh` (or `setup/packages/apps/<name>.sh` for GUI apps)
@@ -131,7 +138,22 @@ Options:
 3. Implement `is_<name>_installed()` and `install_<name>()`
 4. Use `case "$(detect_os)"` for any platform-specific logic
 5. Guard direct execution with the `BASH_SOURCE` check
-6. Register the package in `main.sh`'s `PACKAGES` array
+6. Register the package in `main.sh`'s `PACKAGES`, `PACKAGE_DESCS`, and `PACKAGE_KEYS`
+7. Test and verify the script (see below) before treating it as done
+
+---
+
+## Script Testing & Verification Gate
+
+A package script is not considered finished/executable until all of these pass:
+
+1. **Syntax check** — `bash -n setup/packages/<path>/<name>.sh`
+2. **Registry wiring** — `./main.sh --list` shows the new package, and `./main.sh --dry-run --install <name>` runs cleanly
+3. **Real install** — `./main.sh --install <name>` completes without error, and `is_<name>_installed` returns success (0) afterward
+4. **Idempotency** — running the install a second time detects the already-installed state and skips cleanly, rather than re-installing or erroring
+5. **Install functions must fail loudly** — `install_<name>()` must check the exit status of the underlying `install_pkg`/`install_cask`/`flatpak install` call and return non-zero on failure. Never call `log_success` unconditionally after an install step; only log success once `is_<name>_installed` confirms it.
+
+Only after all of the above pass should the script be registered for regular use or reported back to the user as done.
 
 ---
 
